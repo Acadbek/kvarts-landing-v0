@@ -1,0 +1,5 @@
+# TanStack Start (Nitro netlify preset) static chiqishni `dist` ga yozadi,
+# server funksiya esa avtomatik `.netlify/functions-internal` dan olinadi.
+[build]
+  command = "pnpm run build"
+  publish = "dist"
