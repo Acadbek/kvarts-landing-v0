@@ -14,7 +14,9 @@ const config = defineConfig({
     devtools(),
     nitro(),
     tailwindcss(),
-    paraglideVitePlugin({ project: './project.inlang' }),
+    // outdir atayin explicit: config fayl topilmasa ham (masalan, to'liq
+    // commit qilinmagan snapshot'da) build yiqilmasligi uchun.
+    paraglideVitePlugin({ project: './project.inlang', outdir: './src/paraglide' }),
     tanstackStart(),
     viteReact(),
   ],
