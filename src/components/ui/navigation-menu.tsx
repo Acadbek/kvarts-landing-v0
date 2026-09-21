@@ -61,20 +61,26 @@ function NavigationMenuContent({ className, ...props }: ComponentProps<typeof Na
 
 function NavigationMenuViewport({
   className,
+  popupClassName,
+  popupStyle,
   align = 'center',
   sideOffset = 8,
   ...props
 }: ComponentProps<typeof NavigationMenuPrimitive.Viewport> & {
   align?: ComponentProps<typeof NavigationMenuPrimitive.Positioner>['align']
   sideOffset?: number
+  popupClassName?: string
+  popupStyle?: ComponentProps<typeof NavigationMenuPrimitive.Popup>['style']
 }) {
   return (
     <NavigationMenuPrimitive.Portal>
       <NavigationMenuPrimitive.Positioner align={align} sideOffset={sideOffset} className="z-50 outline-none">
         <NavigationMenuPrimitive.Popup
+          style={popupStyle}
           className={cn(
-            'bg-popover text-popover-foreground origin-top overflow-hidden rounded-2xl border shadow-xl outline-none',
+            'origin-top overflow-hidden rounded-2xl border border-white/50 bg-white/70 text-neutral-900 shadow-2xl backdrop-blur-[32px]',
             'transition-all duration-200 data-[starting-style]:scale-95 data-[starting-style]:opacity-0 data-[ending-style]:scale-95 data-[ending-style]:opacity-0',
+            popupClassName,
           )}
         >
           <NavigationMenuPrimitive.Viewport

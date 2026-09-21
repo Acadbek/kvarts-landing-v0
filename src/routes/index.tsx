@@ -811,48 +811,30 @@ const HERO_SLIDES = [
 function VercelHero() {
   const [tick, setTick] = useState(0)
   const [paused, setPaused] = useState(false)
-  const [focusHold, setFocusHold] = useState(false)
-  const [interacting, setInteracting] = useState(false)
-  const [canAnimate, setCanAnimate] = useState(false)
-  const [imagesReady, setImagesReady] = useState(false)
   const liquid = useLiquidSupported()
 
+  // Har 6 soniyada keyingi slayd. Faqat aniq `paused` holatida to'xtaydi —
+  // hover/focus/visibility/decode holatlariga bog'liq emas, shuning uchun
+  // tab almashtirish yoki scroll'dan keyin "qotib qolish" bo'lmaydi.
+  // Background tab'da brauzer intervalni o'zi throttle qiladi, qaytganda
+  // davom etadi.
   useEffect(() => {
-    const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const update = () => setCanAnimate(!motion.matches && !document.hidden)
-    update()
-    motion.addEventListener('change', update)
-    document.addEventListener('visibilitychange', update)
-    return () => {
-      motion.removeEventListener('change', update)
-      document.removeEventListener('visibilitychange', update)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (paused || focusHold || interacting || !canAnimate || !imagesReady) return
-    const id = window.setInterval(() => setTick((t) => t + 1), 6500)
+    if (paused) return
+    const id = window.setInterval(() => setTick((t) => t + 1), 6000)
     return () => window.clearInterval(id)
-  }, [paused, focusHold, interacting, canAnimate, imagesReady])
+  }, [paused])
 
   const slide = tick % HERO_SLIDES.length
   const textIdx = HERO_SLIDES[slide].text
-  const heroCopy = [
-    { title: [m.hero_title_white, m.hero_title_accent], description: m.hero_sub },
-    { title: [m.hero_s2_title], description: m.hero_s2_desc },
-    { title: [m.hero_s3_title], description: m.hero_s3_desc },
-  ]
 
+  // Slayd rasmlarni fonda oldindan yuklash — slayd almashishni bloklamaydi.
+  // Oldingi `img.decode()` + `imagesReady` geyti bitta rasm xatosida ham
+  // slayderni umrbod to'xtatib qo'yardi.
   useEffect(() => {
-    let cancelled = false
-    Promise.all(HERO_SLIDES.map(({ image }) => {
+    HERO_SLIDES.forEach(({ image }) => {
       const img = new Image()
       img.src = image
-      return img.decode()
-    })).then(() => {
-      if (!cancelled) setImagesReady(true)
-    }).catch(() => {})
-    return () => { cancelled = true }
+    })
   }, [])
   // Root loader hali tayyor bo'lmasa (masalan, dev'da dep re-optimizatsiya paytida
   // router konteksti topilmasa) sahifa yiqilmasligi uchun default 'uz'.
@@ -872,6 +854,30 @@ function VercelHero() {
   useEffect(() => {
     document.documentElement.lang = locale
   }, [locale])
+
+  // Sarlavhani so'zlar bo'yicha 2 qatorga muvozanatli bo'lish —
+  // barcha slaydlar 1-slayd kabi 2 qatorli, bir xil o'lchamda ko'rinadi.
+  const splitTwoLines = (text: string): [string, string] => {
+    const words = text.trim().split(/\s+/)
+    if (words.length < 2) return [text, '']
+    const mid = Math.ceil(words.length / 2)
+    return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')]
+  }
+
+  const heroCopy = [
+    {
+      titleLines: [m.hero_title_white({}, { locale }), m.hero_title_accent({}, { locale })],
+      description: m.hero_sub({}, { locale }),
+    },
+    {
+      titleLines: splitTwoLines(m.hero_s2_title({}, { locale })),
+      description: m.hero_s2_desc({}, { locale }),
+    },
+    {
+      titleLines: splitTwoLines(m.hero_s3_title({}, { locale })),
+      description: m.hero_s3_desc({}, { locale }),
+    },
+  ]
 
   // Refresh'da brauzer eski scroll'ni tiklab qo'ymasligi uchun — har doim tepada boshlanadi.
   useEffect(() => {
@@ -897,14 +903,6 @@ function VercelHero() {
       <main id="hero" className="relative overflow-hidden">
         <section
           className="hero-scene relative flex min-h-[100svh] flex-col justify-center overflow-hidden bg-neutral-950 pb-28"
-          onPointerEnter={(event) => {
-            if (event.pointerType === 'mouse') setInteracting(true)
-          }}
-          onPointerLeave={() => setInteracting(false)}
-          onFocusCapture={() => setFocusHold(true)}
-          onBlurCapture={(event) => {
-            if (!event.currentTarget.contains(event.relatedTarget)) setFocusHold(false)
-          }}
         >
           {/* slayd-shou pauza boshqaruvi — avtomatik harakat >5s bo'lgani uchun (liquid glass, kam blur, glass chekka) */}
           <button
@@ -971,10 +969,10 @@ function VercelHero() {
 
           <div>
             <h1 className="mx-auto mt-7 grid max-w-5xl text-balance text-[clamp(2.125rem,1.5rem+4vw,3.375rem)] font-semibold leading-[1.08] tracking-[-0.02em] text-white">
-              {heroCopy.map(({ title }, i) => (
+              {heroCopy.map(({ titleLines }, i) => (
                 <span key={i} className="hero-copy" data-active={i === textIdx} aria-hidden={i !== textIdx}>
-                  {title.map((line, j) => (
-                    <span key={j} className="block">{line({}, { locale })}</span>
+                  {titleLines.map((line, j) => (
+                    <span key={j} className="block">{line}</span>
                   ))}
                 </span>
               ))}
@@ -982,7 +980,7 @@ function VercelHero() {
             <div className="mx-auto mt-5 grid max-w-xl text-pretty text-base leading-relaxed text-white/85 sm:text-lg">
               {heroCopy.map(({ description }, i) => (
                 <p key={i} className="hero-copy hero-description" data-active={i === textIdx} aria-hidden={i !== textIdx}>
-                  {description({}, { locale })}
+                  {description}
                 </p>
               ))}
             </div>

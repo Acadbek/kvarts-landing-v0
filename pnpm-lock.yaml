@@ -31,10 +31,10 @@ importers:
         version: 0.18.7(@tanstack/ai@0.55.0(zod@4.5.4))(zod@4.5.4)
       '@tanstack/ai-client':
         specifier: latest
-        version: 0.32.0(zod@4.5.4)
+        version: 0.32.1(zod@4.5.4)
       '@tanstack/ai-gemini':
         specifier: latest
-        version: 0.29.4(@modelcontextprotocol/sdk@1.30.0(zod@4.5.4))(@tanstack/ai@0.55.0(zod@4.5.4))
+        version: 0.30.0(@modelcontextprotocol/sdk@1.30.0(zod@4.5.4))(@tanstack/ai@0.55.0(zod@4.5.4))
       '@tanstack/ai-ollama':
         specifier: latest
         version: 0.11.3(@tanstack/ai@0.55.0(zod@4.5.4))
@@ -43,7 +43,7 @@ importers:
         version: 0.22.8(@tanstack/ai@0.55.0(zod@4.5.4))(ws@8.21.3)(zod@4.5.4)
       '@tanstack/ai-react':
         specifier: latest
-        version: 0.26.0(@tanstack/ai@0.55.0(zod@4.5.4))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(zod@4.5.4)
+        version: 0.27.0(@tanstack/ai@0.55.0(zod@4.5.4))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(zod@4.5.4)
       '@tanstack/history':
         specifier: ^1.162.4
         version: 1.162.4
@@ -92,6 +92,9 @@ importers:
       nitro:
         specifier: 3.0.260610-beta
         version: 3.0.260610-beta(chokidar@5.0.0)(dotenv@17.4.2)(jiti@2.7.0)(vite@8.2.2(@types/node@22.20.1)(jiti@2.7.0))
+      nucleo-glass-icons:
+        specifier: ^0.2.1
+        version: 0.2.1(react@19.2.8)
       react:
         specifier: ^19.2.0
         version: 19.2.8
@@ -973,14 +976,14 @@ packages:
       '@anthropic-ai/vertex-sdk':
         optional: true
 
-  '@tanstack/ai-client@0.32.0':
-    resolution: {integrity: sha512-7a8nMyrGZDz/aZujnlVwRzMu43JmyFYPb3bvIp3zsXS6RN/P0uKR1jSBqmgFvmJNUqblOXJ7uGiF4xCabjM9AA==}
+  '@tanstack/ai-client@0.32.1':
+    resolution: {integrity: sha512-YqFyCEAxTfotXsRDjiSR8a6v2E3ABUhCJj2qyD0LduhLdsWOY2wzmNo6eMA/n8e1EFi/bhhMWwg55zDkjtV/sA==}
 
   '@tanstack/ai-event-client@0.11.3':
     resolution: {integrity: sha512-K5Nw05TG2NPJNunV7LI/5m7S97XHHdxN7vwTYcbKbmA5txlToaiF4wCfYBT406m7BOeGlLHZJpr3m1M6Vaai4g==}
 
-  '@tanstack/ai-gemini@0.29.4':
-    resolution: {integrity: sha512-+W4ULbYFxgXGg7M3fpRejhfALPvrL1KaR34jUdu5H/Bi/quKA44PafjfYnpizoZ+1dYQrryi7prw47CtIOItAw==}
+  '@tanstack/ai-gemini@0.30.0':
+    resolution: {integrity: sha512-mRd3BR0VnxTo0890yZwvJPEfA4kTHzeWyzIhlM1rWTClo2GRpoLIoS0sYv6RQw2TK8jNtiVMHaRLDY6VjrtxHw==}
     peerDependencies:
       '@tanstack/ai': ^0.55.0
 
@@ -994,8 +997,8 @@ packages:
     peerDependencies:
       '@tanstack/ai': ^0.55.0
 
-  '@tanstack/ai-react@0.26.0':
-    resolution: {integrity: sha512-wBeRFgIwre3yrnow2UNVIBViDd707ZcUOgNBvE7VVfZ7ZhL69FQOX0ltRMCLWzlU/W+0bcZoWCZ0MgIWEWps4w==}
+  '@tanstack/ai-react@0.27.0':
+    resolution: {integrity: sha512-7rq3Ifz6cGOfuJUGWWab8drbN4LQWegzRo/O27L/0OyLiaAfBbOqCUwkhd00oD9JORQyjcFKr7kSZsd13RgXDg==}
     peerDependencies:
       '@mcp-ui/client': ^7
       '@tanstack/ai': ^0.55.0
@@ -2739,6 +2742,17 @@ packages:
     resolution: {integrity: sha512-9qny7Z9DsQU8Ou39ERsPU4OZQlSTP47ShQzuKZ6PRXpYLtIFgl/DEBYEXKlvcEa+9tHVcK8CF81Y2V72qaZhWA==}
     engines: {node: '>=18'}
 
+  nucleo-glass-icons@0.2.1:
+    resolution: {integrity: sha512-cdD+O9nBlsTaS/LMeKeFx6k5xqDG3H01RKJ5eJ1d+y4tpIpjIePfHDF1mcHi7uffQ/4S+AbkAfBTCIWcmxC5Jg==}
+    peerDependencies:
+      react: '>=16.8.0'
+      vue: '>=3.0.0'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      vue:
+        optional: true
+
   object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
@@ -4446,7 +4460,7 @@ snapshots:
     transitivePeerDependencies:
       - zod
 
-  '@tanstack/ai-client@0.32.0(zod@4.5.4)':
+  '@tanstack/ai-client@0.32.1(zod@4.5.4)':
     dependencies:
       '@tanstack/ai': 0.55.0(zod@4.5.4)
       '@tanstack/ai-event-client': 0.11.3
@@ -4459,7 +4473,7 @@ snapshots:
     dependencies:
       '@tanstack/devtools-event-client': 0.4.4
 
-  '@tanstack/ai-gemini@0.29.4(@modelcontextprotocol/sdk@1.30.0(zod@4.5.4))(@tanstack/ai@0.55.0(zod@4.5.4))':
+  '@tanstack/ai-gemini@0.30.0(@modelcontextprotocol/sdk@1.30.0(zod@4.5.4))(@tanstack/ai@0.55.0(zod@4.5.4))':
     dependencies:
       '@google/genai': 2.21.0(@modelcontextprotocol/sdk@1.30.0(zod@4.5.4))
       '@tanstack/ai': 0.55.0(zod@4.5.4)
@@ -4490,10 +4504,10 @@ snapshots:
       - ws
       - zod
 
-  '@tanstack/ai-react@0.26.0(@tanstack/ai@0.55.0(zod@4.5.4))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(zod@4.5.4)':
+  '@tanstack/ai-react@0.27.0(@tanstack/ai@0.55.0(zod@4.5.4))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(zod@4.5.4)':
     dependencies:
       '@tanstack/ai': 0.55.0(zod@4.5.4)
-      '@tanstack/ai-client': 0.32.0(zod@4.5.4)
+      '@tanstack/ai-client': 0.32.1(zod@4.5.4)
       '@tanstack/markdown': 0.0.13(react@19.2.8)
       '@types/react': 19.2.18
       react: 19.2.8
@@ -6443,6 +6457,10 @@ snapshots:
     dependencies:
       path-key: 4.0.0
       unicorn-magic: 0.3.0
+
+  nucleo-glass-icons@0.2.1(react@19.2.8):
+    optionalDependencies:
+      react: 19.2.8
 
   object-assign@4.1.1: {}
 

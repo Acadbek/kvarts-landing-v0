@@ -181,6 +181,26 @@
   transition: opacity 800ms cubic-bezier(0.77, 0, 0.175, 1);
 }
 
+/* Sekin zoom (Ken Burns) — infinite alternate.
+   Rasm 1 → 1.08 zoom bo'lib, xuddi o'sha tezlikda orqaga qaytadi
+   va to'xtovsiz davom etadi. Animatsiya data-active'ga bog'liq emas,
+   shuning uchun slayd almashganda "sakrash" bo'lmaydi — ko'rinuvchanlik
+   faqat opacity crossfade bilan boshqariladi. */
+@keyframes hero-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.hero-background img {
+  transform-origin: center;
+  will-change: transform;
+  animation: hero-zoom 7s ease-in-out infinite alternate;
+}
+
 .hero-copy {
   grid-area: 1 / 1;
   align-self: center;
@@ -216,6 +236,13 @@
 
   .hero-background[data-active='true'] {
     transition: opacity 150ms;
+  }
+
+  .hero-background img,
+  .hero-background[data-active='true'] img {
+    animation: none;
+    transform: none;
+    transition: none;
   }
 }
 

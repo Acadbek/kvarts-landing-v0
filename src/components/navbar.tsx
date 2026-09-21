@@ -1,5 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
-import { BarChart3, Briefcase, Check, ChevronDown, ChevronRight, Factory, FileText, FolderOpen, Landmark, Megaphone, Menu, Network, Newspaper, Package, Phone, Tag, Users, Vote, X } from 'lucide-react'
+import type { ComponentType } from 'react'
+import { Check, ChevronDown, ChevronRight, Factory, Menu, Newspaper, Package, Phone, Tag, Users, X } from 'lucide-react'
+import {
+  Bell as BellGlass,
+  ClipboardCheck as ClipboardCheckGlass,
+  Files as FilesGlass,
+  Folders as FoldersGlass,
+  Sitemap as SitemapGlass,
+  SquareChartLine as SquareChartLineGlass,
+  Suitcase as SuitcaseGlass,
+  Users as UsersGlass,
+} from 'nucleo-glass-icons/react'
 
 import * as m from '../paraglide/messages.js'
 import type { Locale } from '../paraglide/runtime.js'
@@ -30,14 +41,14 @@ export const LINKS = [
 const DOCS = 'https://docs.kvarts.uz/index.php'
 
 const INVESTOR_LINKS = [
-  { icon: Landmark, title: m.inv_charter, desc: m.inv_charter_d, href: `${DOCS}?subcat=6` },
-  { icon: Megaphone, title: m.inv_facts, desc: m.inv_facts_d, href: `${DOCS}?subcat=11` },
-  { icon: BarChart3, title: m.inv_reports, desc: m.inv_reports_d, href: `${DOCS}?subcat=2` },
-  { icon: Briefcase, title: m.inv_bizplan, desc: m.inv_bizplan_d, href: 'https://docs.kvarts.uz/' },
-  { icon: Users, title: m.inv_affiliated, desc: m.inv_affiliated_d, href: `${DOCS}?subcat=1` },
-  { icon: Network, title: m.inv_structure, desc: m.inv_structure_d, href: 'https://docs.kvarts.uz/files/%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D0%B0%2030.06.2025%D0%B3.pdf' },
-  { icon: FolderOpen, title: m.inv_corpdocs, desc: m.inv_corpdocs_d, href: `${DOCS}?subcat=7` },
-  { icon: Vote, title: m.inv_resolutions, desc: m.inv_resolutions_d, href: `${DOCS}?subcat=1` },
+  { icon: FilesGlass, title: m.inv_charter, desc: m.inv_charter_d, href: `${DOCS}?subcat=6` },
+  { icon: BellGlass, title: m.inv_facts, desc: m.inv_facts_d, href: `${DOCS}?subcat=11` },
+  { icon: SquareChartLineGlass, title: m.inv_reports, desc: m.inv_reports_d, href: `${DOCS}?subcat=2` },
+  { icon: SuitcaseGlass, title: m.inv_bizplan, desc: m.inv_bizplan_d, href: 'https://docs.kvarts.uz/' },
+  { icon: UsersGlass, title: m.inv_affiliated, desc: m.inv_affiliated_d, href: `${DOCS}?subcat=1` },
+  { icon: SitemapGlass, title: m.inv_structure, desc: m.inv_structure_d, href: 'https://docs.kvarts.uz/files/%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D0%B0%2030.06.2025%D0%B3.pdf' },
+  { icon: FoldersGlass, title: m.inv_corpdocs, desc: m.inv_corpdocs_d, href: `${DOCS}?subcat=7` },
+  { icon: ClipboardCheckGlass, title: m.inv_resolutions, desc: m.inv_resolutions_d, href: `${DOCS}?subcat=1` },
 ] as const
 
 /** Boshqa sahifada (#models) turganda anchor'lar bosh sahifaga olib boradi. */
@@ -47,6 +58,7 @@ function home(href: string): string {
 
 function LanguageMenu({ locale, onSwitch }: { locale: Locale; onSwitch: (code: Locale) => void }) {
   const current = LANGS.find((l) => l.code === locale) ?? LANGS[0]
+  const liquid = useLiquidSupported()
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger
@@ -56,17 +68,24 @@ function LanguageMenu({ locale, onSwitch }: { locale: Locale; onSwitch: (code: L
         <span className="leading-none whitespace-nowrap">{current.label}</span>
         <ChevronDown size={14} className="shrink-0 self-center opacity-60" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-[11rem]">
-        {LANGS.map((l) => (
-          <DropdownMenuItem
-            key={l.code}
-            onClick={() => onSwitch(l.code)}
-            className={l.code === locale ? 'bg-neutral-100 font-semibold text-neutral-900' : ''}
-          >
-            <span className="flex-1">{l.label}</span>
-            {l.code === locale && <Check size={15} />}
-          </DropdownMenuItem>
-        ))}
+      <DropdownMenuContent align="end" className="min-w-[11rem]" style={dropdownLightGlassStyle(liquid)}>
+        {/* Ichki qatlam — faqat qo'shimcha blur, fon rangi o'zgarmaydi */}
+        <div className="rounded-lg backdrop-blur-2xl">
+          {LANGS.map((l) => (
+            <DropdownMenuItem
+              key={l.code}
+              onClick={() => onSwitch(l.code)}
+              className={
+                l.code === locale
+                  ? 'cursor-pointer bg-black/[0.06] font-semibold text-neutral-900 hover:bg-black/[0.1] focus:bg-black/[0.1]'
+                  : 'cursor-pointer text-neutral-600 hover:bg-black/[0.05] hover:text-neutral-900 focus:bg-black/[0.05] focus:text-neutral-900'
+              }
+            >
+              <span className="flex-1">{l.label}</span>
+              {l.code === locale && <Check size={15} />}
+            </DropdownMenuItem>
+          ))}
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   )
@@ -139,10 +158,82 @@ export function glassStyle(liquid: boolean): React.CSSProperties {
       }
 }
 
+/** Dropdown (investor + til) uchun ochiq muz-shisha — qora tint yo'q,
+    faqat kuchli blur (navbardagi 20px o'rniga 32px): linklar orqa foni
+    kuchli xiralashadi, matn to'q rangda o'qiladi. */
+export function dropdownLightGlassStyle(liquid: boolean): React.CSSProperties {
+  return liquid
+    ? {
+        background: 'rgb(255 255 255 / 0.6)',
+        backdropFilter: `url(#${FILTER_ID}) saturate(1.4) blur(12px)`,
+        WebkitBackdropFilter: `url(#${FILTER_ID}) saturate(1.4) blur(12px)`,
+        boxShadow:
+          'inset 0 0 0 1px rgb(255 255 255 / 0.5), 0 24px 60px -16px rgb(0 0 0 / 0.25)',
+        border: '1px solid rgb(255 255 255 / 0.5)',
+      }
+    : {
+        background: 'rgb(255 255 255 / 0.65)',
+        backdropFilter: 'blur(32px) saturate(1.4)',
+        WebkitBackdropFilter: 'blur(32px) saturate(1.4)',
+        boxShadow:
+          'inset 0 0 0 1px rgb(255 255 255 / 0.5), 0 24px 60px -16px rgb(0 0 0 / 0.25)',
+        border: '1px solid rgb(255 255 255 / 0.5)',
+      }
+}
+
+/** Navbar pill'ning to'q glass yuzasi — yagona manba. */
+export function navGlassStyle(liquid: boolean): React.CSSProperties {
+  return liquid
+    ? {
+        background: 'hsl(0 0% 8% / 0.28)',
+        backdropFilter: `url(#${FILTER_ID}) saturate(1.6) blur(1px)`,
+        WebkitBackdropFilter: `url(#${FILTER_ID}) saturate(1.6) blur(1px)`,
+        boxShadow:
+          'inset 0 -10px 24px rgb(0 0 0 / 0.2), inset 0 10px 24px rgb(255 255 255 / 0.08), inset 0 0 0 1px rgb(255 255 255 / 0.1), 0 16px 40px -16px rgb(0 0 0 / 0.35)',
+        border: '1px solid rgb(255 255 255 / 0.1)',
+      }
+    : {
+        background: 'hsl(0 0% 8% / 0.35)',
+        backdropFilter: 'blur(20px) saturate(1.6)',
+        WebkitBackdropFilter: 'blur(20px) saturate(1.6)',
+        boxShadow:
+          'inset 0 -10px 24px rgb(0 0 0 / 0.2), inset 0 10px 24px rgb(255 255 255 / 0.08), inset 0 0 0 1px rgb(255 255 255 / 0.1), 0 16px 40px -16px rgb(0 0 0 / 0.35)',
+        border: '1px solid rgb(255 255 255 / 0.1)',
+      }
+}
+
+/** Nucleo glass-icons uslubidagi shisha ikonka-plitka: yarim shaffof oq
+    gradient + ichki highlight + yumshoq soya, o'rtada Lucide glif.
+    Ochiq muz-shisha dropdown'lar bilan bir oiladan. */
+function GlassIcon({
+  icon: Icon,
+  iconSize = 16,
+  className = 'h-9 w-9 rounded-[10px]',
+}: {
+  icon: typeof FileText
+  iconSize?: number
+  className?: string
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`grid shrink-0 place-items-center text-neutral-700 ring-1 ring-white/70 ring-inset backdrop-blur-md transition-transform duration-150 group-hover:scale-105 ${className}`}
+      style={{
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.35))',
+        boxShadow:
+          'inset 0 1px 1px rgba(255,255,255,0.9), inset 0 -1px 2px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.12)',
+      }}
+    >
+      <Icon size={iconSize} strokeWidth={2} />
+    </span>
+  )
+}
+
 function InvestorsMenu({ locale }: { locale: Locale }) {
   // Click-only: hover sababli ochilishni e'tiborsiz qoldiramiz (controlled value).
   // Yopilish: trigger'ga qayta click, outside click, Escape yoki link click.
   const [value, setValue] = useState<string | null>(null)
+  const liquid = useLiquidSupported()
   return (
     <NavigationMenu
       className="flex-none"
@@ -161,9 +252,9 @@ function InvestorsMenu({ locale }: { locale: Locale }) {
             <ChevronDown size={14} className="shrink-0 self-center opacity-60" />
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <div className="w-[42rem] max-w-[calc(100vw-3rem)] overflow-hidden">
-              {/* Hujjatlar — ikon + matn, scroll yo'q */}
-              <ul className="grid grid-cols-2 gap-x-1 gap-y-0.5 p-2.5">
+            <div className="w-[42rem] max-w-[calc(100vw-3rem)] p-2">
+              {/* Ichki qatlam — faqat qo'shimcha blur, fon rangi o'zgarmaydi */}
+              <ul className="grid grid-cols-2 gap-1 rounded-xl p-1 backdrop-blur-2xl">
                 {INVESTOR_LINKS.map((l, i) => (
                   <InvestorListItem
                     key={`${l.href}#${i}`}
@@ -178,12 +269,12 @@ function InvestorsMenu({ locale }: { locale: Locale }) {
           </NavigationMenuContent>
         </NavigationMenuItem>
       </NavigationMenuList>
-      <NavigationMenuViewport />
+      <NavigationMenuViewport popupStyle={dropdownLightGlassStyle(liquid)} />
     </NavigationMenu>
   )
 }
 
-function InvestorListItem({ icon: Icon, title, desc, href }: { icon: typeof FileText; title: string; desc: string; href: string }) {
+function InvestorListItem({ icon: Icon, title, desc, href }: { icon: ComponentType<{ size?: number | string; className?: string }>; title: string; desc: string; href: string }) {
   return (
     <li>
       <NavigationMenuLink
@@ -191,11 +282,10 @@ function InvestorListItem({ icon: Icon, title, desc, href }: { icon: typeof File
         closeOnClick
         target="_blank"
         rel="noreferrer"
-        className="group flex items-center gap-3 rounded-xl px-2.5 py-2.5 outline-none transition-colors duration-150 hover:bg-neutral-100 focus-visible:bg-neutral-100"
+        className="group flex items-center gap-3 rounded-xl px-2.5 py-2.5 outline-none transition-colors duration-150 hover:bg-black/[0.06] focus-visible:bg-black/[0.06]"
       >
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-neutral-100 text-neutral-600 ring-1 ring-black/[0.06] ring-inset transition-colors duration-150 group-hover:bg-neutral-200 group-hover:text-neutral-900">
-          <Icon size={16} strokeWidth={2} />
-        </span>
+        {/* Asl Nucleo glass SVG — o'zining shisha foni bilan keladi, qo'shimcha plitka kerak emas */}
+        <Icon size={24} className="h-6 w-6 shrink-0 drop-shadow-sm" />
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[13px] font-semibold tracking-[-0.01em] text-neutral-900">{title}</span>
           <span className="mt-px block truncate text-xs text-neutral-500">{desc}</span>
@@ -229,23 +319,7 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
     return () => ro.disconnect()
   }, [])
 
-  const pillStyle: React.CSSProperties = liquid
-    ? {
-        background: 'hsl(0 0% 8% / 0.28)',
-        backdropFilter: `url(#${FILTER_ID}) saturate(1.6) blur(1px)`,
-        WebkitBackdropFilter: `url(#${FILTER_ID}) saturate(1.6) blur(1px)`,
-        boxShadow:
-          'inset 0 -10px 24px rgb(0 0 0 / 0.2), inset 0 10px 24px rgb(255 255 255 / 0.08), inset 0 0 0 1px rgb(255 255 255 / 0.1), 0 16px 40px -16px rgb(0 0 0 / 0.35)',
-        border: '1px solid rgb(255 255 255 / 0.1)',
-      }
-    : {
-        background: 'hsl(0 0% 8% / 0.35)',
-        backdropFilter: 'blur(20px) saturate(1.6)',
-        WebkitBackdropFilter: 'blur(20px) saturate(1.6)',
-        boxShadow:
-          'inset 0 -10px 24px rgb(0 0 0 / 0.2), inset 0 10px 24px rgb(255 255 255 / 0.08), inset 0 0 0 1px rgb(255 255 255 / 0.1), 0 16px 40px -16px rgb(0 0 0 / 0.35)',
-        border: '1px solid rgb(255 255 255 / 0.1)',
-      }
+  const pillStyle: React.CSSProperties = navGlassStyle(liquid)
 
   return (
     <header className="fixed inset-x-0 top-[max(0.75rem,env(safe-area-inset-top))] z-50 px-4 select-none sm:top-[max(1.25rem,env(safe-area-inset-top))]">
@@ -347,9 +421,7 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
                     onClick={() => setMenu(false)}
                     className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-[15px] font-semibold text-neutral-100 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10"
                   >
-                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/10 text-white">
-                      <Icon size={19} />
-                    </span>
+                    <GlassIcon icon={Icon} iconSize={19} className="h-10 w-10 rounded-xl" />
                     <span className="flex-1">{l.text({}, { locale })}</span>
                     <ChevronRight size={16} className="shrink-0 text-neutral-500" />
                   </a>
@@ -357,9 +429,7 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
               })}
               <details className="group">
                 <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl px-3 py-2.5 text-[15px] font-semibold text-neutral-100 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10 [&::-webkit-details-marker]:hidden">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/10 text-white">
-                    <Users size={19} />
-                  </span>
+                  <GlassIcon icon={Users} iconSize={19} className="h-10 w-10 rounded-xl" />
                   <span className="flex-1">{m.nav_investors({}, { locale })}</span>
                   <ChevronDown size={16} className="shrink-0 text-neutral-500 transition-transform group-open:rotate-180" />
                 </summary>
@@ -387,9 +457,7 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
                     onClick={() => setMenu(false)}
                     className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-[15px] font-semibold text-neutral-100 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10"
                   >
-                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/10 text-white">
-                      <Icon size={19} />
-                    </span>
+                    <GlassIcon icon={Icon} iconSize={19} className="h-10 w-10 rounded-xl" />
                     <span className="flex-1">{l.text({}, { locale })}</span>
                     <ChevronRight size={16} className="shrink-0 text-neutral-500" />
                   </a>
@@ -400,9 +468,7 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
                 onClick={() => setMenu(false)}
                 className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-[15px] font-semibold text-neutral-100 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10"
               >
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/10 text-white">
-                  <Phone size={19} />
-                </span>
+                <GlassIcon icon={Phone} iconSize={19} className="h-10 w-10 rounded-xl" />
                 <span className="flex-1">{m.nav_contacts({}, { locale })}</span>
                 <ChevronRight size={16} className="shrink-0 text-neutral-500" />
               </a>
