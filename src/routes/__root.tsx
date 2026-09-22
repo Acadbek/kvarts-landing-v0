@@ -68,6 +68,29 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         type: 'image/png',
         href: '/logo.png',
       },
+      // SF Pro kritik vaznlar — CSS'dan oldin yuklanadi, hard refresh'da
+      // font almashinuvi (FOUT/siljish) ko'rinmaydi.
+      {
+        rel: 'preload',
+        href: '/fonts/SFPRODISPLAYREGULAR.woff2',
+        as: 'font',
+        type: 'font/woff2',
+        crossOrigin: 'anonymous',
+      },
+      {
+        rel: 'preload',
+        href: '/fonts/SFPRODISPLAYMEDIUM.woff2',
+        as: 'font',
+        type: 'font/woff2',
+        crossOrigin: 'anonymous',
+      },
+      {
+        rel: 'preload',
+        href: '/fonts/SFPRODISPLAYBOLD.woff2',
+        as: 'font',
+        type: 'font/woff2',
+        crossOrigin: 'anonymous',
+      },
     ],
   }),
   shellComponent: RootDocument,
