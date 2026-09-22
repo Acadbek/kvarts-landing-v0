@@ -828,14 +828,17 @@ const HERO_SLIDES = [
 type HeroCopy = { titleLines: string[]; description: string }
 
 /* Bitta hero slayd kontenti (badge + title + desc + CTA) — Splide slaydlarida
-   va SSR fallback'da qayta ishlatiladi. */
-function HeroSlideContent({ copy, locale, liquid }: { copy: HeroCopy; locale: Locale; liquid: boolean }) {
+   va SSR fallback'da qayta ishlatiladi.
+   `animated`: CTA kirish animatsiyasi (`rise`) faqat Splide slaydlarida
+   o'ynaydi — fallback'da tugma ko'rinmas turadi, shunda refresh'da
+   animatsiya 1 marta (qayta o'chib-yonmasdan) chiqadi. */
+function HeroSlideContent({ copy, locale, liquid, animated = true }: { copy: HeroCopy; locale: Locale; liquid: boolean; animated?: boolean }) {
   return (
     <div className="relative mx-auto w-full max-w-5xl px-5 text-center select-none">
       {/* badge */}
       <a
         href="#zavod"
-        className="group inline-flex max-w-full items-center gap-2.5 rounded-full border border-white/20 py-1 pl-1 pr-3.5 text-xs text-white/85 shadow-sm transition-colors duration-300 hover:border-white/40 hover:text-white active:scale-[0.98] sm:text-[13px]"
+        className={`${animated ? 'rise-top rise-2 ' : 'invisible '}group inline-flex max-w-full items-center gap-2.5 rounded-full border border-white/20 py-1 pl-1 pr-3.5 text-xs text-white/85 shadow-sm transition-colors duration-300 hover:border-white/40 hover:text-white active:scale-[0.98] sm:text-[13px]`}
         style={glassStyle(liquid)}
       >
         <span className="shrink-0 rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-semibold text-white">
@@ -861,7 +864,7 @@ function HeroSlideContent({ copy, locale, liquid }: { copy: HeroCopy; locale: Lo
         <button
           type="button"
           onClick={() => document.getElementById('zavod')?.scrollIntoView({ behavior: 'smooth' })}
-          className="rise rise-4 group inline-flex w-full cursor-pointer items-center gap-2.5 rounded-full border border-white/20 py-1.5 pl-1.5 pr-5 text-sm font-semibold text-white/90 shadow-sm transition-colors duration-300 hover:border-white/40 hover:text-white active:scale-[0.98] sm:w-auto"
+          className={`${animated ? 'rise rise-4 ' : 'invisible '}group inline-flex w-full cursor-pointer items-center gap-2.5 rounded-full border border-white/20 py-1.5 pl-1.5 pr-5 text-sm font-semibold text-white/90 shadow-sm transition-colors duration-300 hover:border-white/40 hover:text-white active:scale-[0.98] sm:w-auto`}
           style={glassStyle(liquid)}
         >
           <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-white">
@@ -897,7 +900,7 @@ function VercelHero() {
       splide.options = { speed: 500 }
     })
     splide.on('moved', () => {
-      splide.options = { speed: 1400 }
+      splide.options = { speed: 1200 }
       const autoplay = splide.Components?.Autoplay
       autoplay?.pause()
       autoplay?.play()
@@ -991,7 +994,7 @@ function VercelHero() {
                 perPage: 1,
                 perMove: 1,
                 gap: 0,
-                speed: 1400,
+                speed: 1200,
                 easing: 'cubic-bezier(0.5, 0, 0.35, 1)',
                 autoplay: true,
                 interval: 6000,
@@ -1045,7 +1048,7 @@ function VercelHero() {
                 />
               </div>
               <div className="absolute inset-0 bg-black/55" aria-hidden="true" />
-              <HeroSlideContent copy={heroCopy[HERO_SLIDES[0].text]} locale={locale} liquid={liquid} />
+              <HeroSlideContent copy={heroCopy[HERO_SLIDES[0].text]} locale={locale} liquid={liquid} animated={false} />
             </div>
           )}
         </section>

@@ -235,14 +235,14 @@
 
 /* Hero carousel (Splide) — sekin zoom (Ken Burns), transition bilan.
    Faol slayd: 1.02 → 1.08 (6s, avtoplay intervaliga mos).
-   Nofaol slayd: transform 1400ms kechikish bilan reset bo'ladi —
+   Nofaol slayd: transform 1200ms kechikish bilan reset bo'ladi —
    bu slayd davomiyligiga teng, shuning uchun chiqayotgan rasm
    ko'rinib turganda muzlagan zoom'da qoladi, ko'rinmas bo'lgach
    jimgina asl holiga qaytadi. "Sakrash" yo'q. */
 .hero-slide-img {
   transform: scale(1.02);
   transform-origin: center;
-  transition: transform 0s 1400ms;
+  transition: transform 0s 1200ms;
 }
 
 .splide__slide.is-active .hero-slide-img {
@@ -274,6 +274,24 @@
   animation: fade-slide-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .rise-4 { animation-delay: 0.35s; }
+
+/* Tepadan tushib kirish (hero badge uchun) */
+@keyframes fade-slide-in-top {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rise-top {
+  opacity: 0;
+  animation: fade-slide-in-top 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.rise-2 { animation-delay: 0.15s; }
 
 @layer base {
   :focus-visible {
@@ -348,6 +366,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .rise {
+    opacity: 1;
+    animation: none;
+  }
+  .rise-top {
     opacity: 1;
     animation: none;
   }
