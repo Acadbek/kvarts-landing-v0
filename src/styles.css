@@ -233,27 +233,22 @@
   }
 }
 
-/* Hero carousel (Splide) — sekin zoom (Ken Burns), infinite alternate.
-   Faqat FAOL slayd rasmi animatsiyalanadi (Splide `is-active` beradi):
-   5 ta fullscreen qatlamni bir vaqtda GPU'da harakatlantirish
-   eng katta resurs yeyuvchi edi. */
-@keyframes hero-zoom {
-  from {
-    transform: scale(1.02);
-  }
-  to {
-    transform: scale(1.08);
-  }
-}
-
+/* Hero carousel (Splide) — sekin zoom (Ken Burns), transition bilan.
+   Faol slayd: 1.02 → 1.08 (6s, avtoplay intervaliga mos).
+   Nofaol slayd: transform 1400ms kechikish bilan reset bo'ladi —
+   bu slayd davomiyligiga teng, shuning uchun chiqayotgan rasm
+   ko'rinib turganda muzlagan zoom'da qoladi, ko'rinmas bo'lgach
+   jimgina asl holiga qaytadi. "Sakrash" yo'q. */
 .hero-slide-img {
   transform: scale(1.02);
   transform-origin: center;
+  transition: transform 0s 1400ms;
 }
 
 .splide__slide.is-active .hero-slide-img {
+  transform: scale(1.08);
+  transition: transform 6s linear;
   will-change: transform;
-  animation: hero-zoom 7s ease-in-out infinite alternate;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -886,11 +886,18 @@ function VercelHero() {
 
   // Qo'lda o'tkazilganda (drag) taymer NOLDAN qayta boshlanadi:
   // har 'moved' dan keyin autoplay to'liq 6s interval bilan qayta start oladi.
+  // Drag'da snap chaqqon (500ms), avtoplay o'tishlari silliq (1400ms) —
+  // easing drag'ni "ushlab olmaydi": tez flick tez o'tadi, sekin drag sekin.
   const handleSplideMounted = (splide: {
     Components?: { Autoplay?: { pause: () => void; play: () => void } }
-    on: (ev: 'moved', cb: () => void) => void
+    options: Record<string, unknown>
+    on: (ev: 'drag' | 'moved', cb: () => void) => void
   }) => {
+    splide.on('drag', () => {
+      splide.options = { speed: 500 }
+    })
     splide.on('moved', () => {
+      splide.options = { speed: 1400 }
       const autoplay = splide.Components?.Autoplay
       autoplay?.pause()
       autoplay?.play()
@@ -984,8 +991,8 @@ function VercelHero() {
                 perPage: 1,
                 perMove: 1,
                 gap: 0,
-                speed: 700,
-                easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+                speed: 1400,
+                easing: 'cubic-bezier(0.5, 0, 0.35, 1)',
                 autoplay: true,
                 interval: 6000,
                 pauseOnHover: false,
