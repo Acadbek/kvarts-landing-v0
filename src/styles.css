@@ -233,10 +233,10 @@
   }
 }
 
-/* Hero carousel — sekin zoom (Ken Burns), infinite alternate.
-   Faqat FAOL slayd rasmi animatsiyalanadi: 5 ta fullscreen qatlamni
-   bir vaqtda GPU'da harakatlantirish eng katta resurs yeyuvchi edi.
-   Slayd harakati Embla'da, shuning uchun "sakrash" bo'lmaydi. */
+/* Hero carousel (Splide) — sekin zoom (Ken Burns), infinite alternate.
+   Faqat FAOL slayd rasmi animatsiyalanadi (Splide `is-active` beradi):
+   5 ta fullscreen qatlamni bir vaqtda GPU'da harakatlantirish
+   eng katta resurs yeyuvchi edi. */
 @keyframes hero-zoom {
   from {
     transform: scale(1.02);
@@ -251,7 +251,7 @@
   transform-origin: center;
 }
 
-.hero-slide-img[data-active='true'] {
+.splide__slide.is-active .hero-slide-img {
   will-change: transform;
   animation: hero-zoom 7s ease-in-out infinite alternate;
 }

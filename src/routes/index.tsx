@@ -9,8 +9,9 @@ import { switchLocale } from '../lib/locale'
 import { NEWS, formatNewsDate } from '../lib/news.js'
 import { CATALOGS } from '../lib/catalog'
 import { LINKS, LiquidGlassNav, glassStyle, useLiquidSupported } from '../components/navbar'
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '../components/ui/carousel'
 import { SlidingNumber } from '../components/sliding-number'
+import { Splide, SplideSlide } from '@splidejs/react-splide'
+import '@splidejs/react-splide/css/core'
 
 export const Route = createFileRoute('/')({ component: VercelHero })
 
@@ -824,45 +825,77 @@ const HERO_SLIDES = [
   { image: '/ENZ_1186.jpg', text: 0 },
 ]
 
+type HeroCopy = { titleLines: string[]; description: string }
+
+/* Bitta hero slayd kontenti (badge + title + desc + CTA) — Splide slaydlarida
+   va SSR fallback'da qayta ishlatiladi. */
+function HeroSlideContent({ copy, locale, liquid }: { copy: HeroCopy; locale: Locale; liquid: boolean }) {
+  return (
+    <div className="relative mx-auto w-full max-w-5xl px-5 text-center select-none">
+      {/* badge */}
+      <a
+        href="#zavod"
+        className="group inline-flex max-w-full items-center gap-2.5 rounded-full border border-white/20 py-1 pl-1 pr-3.5 text-xs text-white/85 shadow-sm transition-colors duration-300 hover:border-white/40 hover:text-white active:scale-[0.98] sm:text-[13px]"
+        style={glassStyle(liquid)}
+      >
+        <span className="shrink-0 rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-semibold text-white">
+          {m.hero_badge_new({}, { locale })}
+        </span>
+        <span className="truncate">{m.hero_eyebrow({}, { locale })}</span>
+        <ArrowRight size={14} className="shrink-0 text-white/60 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
+      </a>
+
+      <div>
+        <h1 className="mx-auto mt-7 max-w-5xl text-balance text-[clamp(2.125rem,1.5rem+4vw,3.375rem)] font-semibold leading-[1.08] tracking-[-0.02em] text-white">
+          {copy.titleLines.map((line, j) => (
+            <span key={j} className="block">{line}</span>
+          ))}
+        </h1>
+        <p className="mx-auto mt-5 max-w-xl text-pretty text-base leading-relaxed text-white/85 sm:text-lg">
+          {copy.description}
+        </p>
+      </div>
+
+      {/* CTA — badge bilan bir xil struktura/uslub */}
+      <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <button
+          type="button"
+          onClick={() => document.getElementById('zavod')?.scrollIntoView({ behavior: 'smooth' })}
+          className="rise rise-4 group inline-flex w-full cursor-pointer items-center gap-2.5 rounded-full border border-white/20 py-1.5 pl-1.5 pr-5 text-sm font-semibold text-white/90 shadow-sm transition-colors duration-300 hover:border-white/40 hover:text-white active:scale-[0.98] sm:w-auto"
+          style={glassStyle(liquid)}
+        >
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-white">
+            <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+          </span>
+          <span className="truncate">{m.hero_cta_more({}, { locale })}</span>
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function VercelHero() {
-  const [api, setApi] = useState<CarouselApi>()
-  const [selected, setSelected] = useState(0)
-  const [activeIdx, setActiveIdx] = useState(0)
+  const [mounted, setMounted] = useState(false)
   const liquid = useLiquidSupported()
 
-  // Dots/aria uchun — slayd tanlanganda (settle).
+  // Splide faqat client'da mount qilinadi (SSR xavfsizligi) —
+  // server'da birinchi slayd statik render bo'ladi.
   useEffect(() => {
-    if (!api) return
-    const onSelect = () => {
-      const snap = api.selectedScrollSnap()
-      setSelected(snap)
-      setActiveIdx(snap)
-    }
-    onSelect()
-    api.on('select', onSelect)
-    api.on('reInit', onSelect)
-    return () => {
-      api.off('select', onSelect)
-      api.off('reInit', onSelect)
-    }
-  }, [api])
+    setMounted(true)
+  }, [])
 
-  // Avtoplay — har 6 soniyada keyingi slayd. Taymer har slayd
-  // almashganda (avto yoki qo'lda — swipe) NOLDAN qayta boshlanadi:
-  // effekt `selected` ga bog'langan, shuning uchun qo'lda o'tkazsangiz
-  // keyingi avto-o'tish to'liq 6 sekunddan keyin bo'ladi.
-  // Zoom (`activeIdx`) harakat BOSHLANISHIda yoqiladi: `select` settle'da
-  // keladi, o'sha payt React update + qatlam yaratish slayd oxirida
-  // 0.5s tiqilishga sabab bo'lardi.
-  useEffect(() => {
-    if (!api) return
-    const id = window.setInterval(() => {
-      const next = (api.selectedScrollSnap() + 1) % HERO_SLIDES.length
-      setActiveIdx(next)
-      api.scrollNext()
-    }, 6000)
-    return () => window.clearInterval(id)
-  }, [api, selected])
+  // Qo'lda o'tkazilganda (drag) taymer NOLDAN qayta boshlanadi:
+  // har 'moved' dan keyin autoplay to'liq 6s interval bilan qayta start oladi.
+  const handleSplideMounted = (splide: {
+    Components?: { Autoplay?: { pause: () => void; play: () => void } }
+    on: (ev: 'moved', cb: () => void) => void
+  }) => {
+    splide.on('moved', () => {
+      const autoplay = splide.Components?.Autoplay
+      autoplay?.pause()
+      autoplay?.play()
+    })
+  }
 
   // Barcha slayd rasmlarini darhol (past prioritetda) yuklab + dekodlash —
   // slayd kelganda "tayyor emas" bo'lib o'rtada tiqilish/pop bo'lmasligi uchun.
@@ -944,87 +977,70 @@ function VercelHero() {
 
       <main id="hero" className="relative overflow-hidden">
         <section className="hero-scene relative overflow-hidden bg-neutral-950">
-          <Carousel
-            opts={{ loop: true }}
-            setApi={setApi}
-            aria-label={m.hero_eyebrow({}, { locale })}
-          >
-            <CarouselContent className="ml-0">
-              {HERO_SLIDES.map(({ image }, i) => {
-                const copy = heroCopy[HERO_SLIDES[i].text]
-                const isActive = i === activeIdx
-                const isSelected = i === selected
-                return (
-                  <CarouselItem
-                    key={image}
-                    aria-label={`${i + 1} / ${HERO_SLIDES.length}`}
-                    aria-hidden={!isSelected}
-                    inert={!isSelected}
-                    className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden py-28 pl-0"
-                  >
-                    {/* slayd foni */}
-                    <div className="absolute inset-0" aria-hidden="true">
-                      <img
-                        src={image}
-                        alt=""
-                        loading="eager"
-                        decoding="async"
-                        draggable={false}
-                        data-active={isActive}
-                        fetchPriority={i === 0 ? 'high' : 'low'}
-                        className="hero-slide-img h-full w-full object-cover"
-                      />
-                    </div>
-                    {/* matn o'qilishi uchun tekis parda (flat, gradient yo'q) */}
-                    <div className="absolute inset-0 bg-black/55" aria-hidden="true" />
-
-                    <div className="relative mx-auto w-full max-w-5xl px-5 text-center select-none">
-                      {/* badge */}
-                      <a
-                        href="#hero-cta"
-                        tabIndex={isSelected ? undefined : -1}
-                        className="group inline-flex max-w-full items-center gap-2.5 rounded-full border border-white/20 py-1 pl-1 pr-3.5 text-xs text-white/85 shadow-sm transition-colors duration-300 hover:border-white/40 hover:text-white active:scale-[0.98] sm:text-[13px]"
-                        style={glassStyle(liquid)}
-                      >
-                        <span className="shrink-0 rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-semibold text-white">
-                          {m.hero_badge_new({}, { locale })}
-                        </span>
-                        <span className="truncate">{m.hero_eyebrow({}, { locale })}</span>
-                        <ArrowRight size={14} className="shrink-0 text-white/60 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
-                      </a>
-
-                      <div>
-                        <h1 className="mx-auto mt-7 max-w-5xl text-balance text-[clamp(2.125rem,1.5rem+4vw,3.375rem)] font-semibold leading-[1.08] tracking-[-0.02em] text-white">
-                          {copy.titleLines.map((line, j) => (
-                            <span key={j} className="block">{line}</span>
-                          ))}
-                        </h1>
-                        <p className="mx-auto mt-5 max-w-xl text-pretty text-base leading-relaxed text-white/85 sm:text-lg">
-                          {copy.description}
-                        </p>
-                      </div>
-
-                      {/* CTA — badge bilan bir xil struktura/uslub */}
-                      <div id={i === 0 ? 'hero-cta' : undefined} className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                        <button
-                          type="button"
-                          tabIndex={isSelected ? undefined : -1}
-                          onClick={() => document.getElementById('zavod')?.scrollIntoView({ behavior: 'smooth' })}
-                          className="rise rise-4 group inline-flex w-full cursor-pointer items-center gap-2.5 rounded-full border border-white/20 py-1.5 pl-1.5 pr-5 text-sm font-semibold text-white/90 shadow-sm transition-colors duration-300 hover:border-white/40 hover:text-white active:scale-[0.98] sm:w-auto"
-                          style={glassStyle(liquid)}
-                        >
-                          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-white">
-                            <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-                          </span>
-                          <span className="truncate">{m.hero_cta_more({}, { locale })}</span>
-                        </button>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                )
-              })}
-            </CarouselContent>
-          </Carousel>
+          {mounted ? (
+            <Splide
+              options={{
+                type: 'loop',
+                perPage: 1,
+                perMove: 1,
+                gap: 0,
+                speed: 700,
+                easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+                autoplay: true,
+                interval: 6000,
+                pauseOnHover: false,
+                pauseOnFocus: false,
+                resetProgress: false,
+                arrows: false,
+                pagination: false,
+                keyboard: false,
+                slideFocus: false,
+                updateOnMove: true,
+              }}
+              onMounted={handleSplideMounted}
+              aria-label={m.hero_eyebrow({}, { locale })}
+            >
+              {HERO_SLIDES.map(({ image }, i) => (
+                <SplideSlide
+                  key={image}
+                  className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden py-28"
+                >
+                  {/* slayd foni */}
+                  <div className="absolute inset-0" aria-hidden="true">
+                    <img
+                      src={image}
+                      alt=""
+                      loading="eager"
+                      decoding="async"
+                      draggable={false}
+                      fetchPriority={i === 0 ? 'high' : 'low'}
+                      className="hero-slide-img h-full w-full object-cover"
+                    />
+                  </div>
+                  {/* matn o'qilishi uchun tekis parda (flat, gradient yo'q) */}
+                  <div className="absolute inset-0 bg-black/55" aria-hidden="true" />
+                  <HeroSlideContent copy={heroCopy[HERO_SLIDES[i].text]} locale={locale} liquid={liquid} />
+                </SplideSlide>
+              ))}
+            </Splide>
+          ) : (
+            /* SSR fallback — birinchi slayd statik */
+            <div className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden py-28">
+              <div className="absolute inset-0" aria-hidden="true">
+                <img
+                  src={HERO_SLIDES[0].image}
+                  alt=""
+                  loading="eager"
+                  decoding="async"
+                  draggable={false}
+                  fetchPriority="high"
+                  className="hero-slide-img h-full w-full object-cover"
+                />
+              </div>
+              <div className="absolute inset-0 bg-black/55" aria-hidden="true" />
+              <HeroSlideContent copy={heroCopy[HERO_SLIDES[0].text]} locale={locale} liquid={liquid} />
+            </div>
+          )}
         </section>
 
         <QuickLinks locale={locale} />
