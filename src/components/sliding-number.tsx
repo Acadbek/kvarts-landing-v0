@@ -66,7 +66,7 @@ function Digit({ value, place }: { value: number; place: number }) {
   return (
     <div
       ref={ref}
-      className='relative inline-block w-[1ch] overflow-x-visible overflow-y-clip leading-none tabular-nums'
+      className='relative inline-block h-[1em] overflow-hidden px-[0.02em] leading-none tabular-nums'
     >
       <div className='invisible'>0</div>
       {height > 0 &&
@@ -99,7 +99,7 @@ export function SlidingNumber({
   );
 
   return (
-    <div className='flex items-center'>
+    <div className='flex items-center gap-[0.02em]'>
       {value < 0 && '-'}
       {integerDigits.map((_, index) => (
         <Digit

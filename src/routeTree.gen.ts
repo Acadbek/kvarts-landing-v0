@@ -11,6 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ModelsRouteImport } from './routes/models'
+import { Route as InvestorsAffiliatedRouteImport } from './routes/investors.affiliated'
+import { Route as InvestorsBizplanRouteImport } from './routes/investors.bizplan'
+import { Route as InvestorsCharterRouteImport } from './routes/investors.charter'
+import { Route as InvestorsCorpdocsRouteImport } from './routes/investors.corpdocs'
+import { Route as InvestorsFactsRouteImport } from './routes/investors.facts'
+import { Route as InvestorsReportsRouteImport } from './routes/investors.reports'
+import { Route as InvestorsResolutionsRouteImport } from './routes/investors.resolutions'
+import { Route as InvestorsStructureRouteImport } from './routes/investors.structure'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +30,134 @@ const ModelsRoute = ModelsRouteImport.update({
   path: '/models',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InvestorsAffiliatedRoute = InvestorsAffiliatedRouteImport.update({
+  id: '/investors/affiliated',
+  path: '/investors/affiliated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvestorsBizplanRoute = InvestorsBizplanRouteImport.update({
+  id: '/investors/bizplan',
+  path: '/investors/bizplan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvestorsCharterRoute = InvestorsCharterRouteImport.update({
+  id: '/investors/charter',
+  path: '/investors/charter',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvestorsCorpdocsRoute = InvestorsCorpdocsRouteImport.update({
+  id: '/investors/corpdocs',
+  path: '/investors/corpdocs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvestorsFactsRoute = InvestorsFactsRouteImport.update({
+  id: '/investors/facts',
+  path: '/investors/facts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvestorsReportsRoute = InvestorsReportsRouteImport.update({
+  id: '/investors/reports',
+  path: '/investors/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvestorsResolutionsRoute = InvestorsResolutionsRouteImport.update({
+  id: '/investors/resolutions',
+  path: '/investors/resolutions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvestorsStructureRoute = InvestorsStructureRouteImport.update({
+  id: '/investors/structure',
+  path: '/investors/structure',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/models': typeof ModelsRoute
+  '/investors/affiliated': typeof InvestorsAffiliatedRoute
+  '/investors/bizplan': typeof InvestorsBizplanRoute
+  '/investors/charter': typeof InvestorsCharterRoute
+  '/investors/corpdocs': typeof InvestorsCorpdocsRoute
+  '/investors/facts': typeof InvestorsFactsRoute
+  '/investors/reports': typeof InvestorsReportsRoute
+  '/investors/resolutions': typeof InvestorsResolutionsRoute
+  '/investors/structure': typeof InvestorsStructureRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/models': typeof ModelsRoute
+  '/investors/affiliated': typeof InvestorsAffiliatedRoute
+  '/investors/bizplan': typeof InvestorsBizplanRoute
+  '/investors/charter': typeof InvestorsCharterRoute
+  '/investors/corpdocs': typeof InvestorsCorpdocsRoute
+  '/investors/facts': typeof InvestorsFactsRoute
+  '/investors/reports': typeof InvestorsReportsRoute
+  '/investors/resolutions': typeof InvestorsResolutionsRoute
+  '/investors/structure': typeof InvestorsStructureRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/models': typeof ModelsRoute
+  '/investors/affiliated': typeof InvestorsAffiliatedRoute
+  '/investors/bizplan': typeof InvestorsBizplanRoute
+  '/investors/charter': typeof InvestorsCharterRoute
+  '/investors/corpdocs': typeof InvestorsCorpdocsRoute
+  '/investors/facts': typeof InvestorsFactsRoute
+  '/investors/reports': typeof InvestorsReportsRoute
+  '/investors/resolutions': typeof InvestorsResolutionsRoute
+  '/investors/structure': typeof InvestorsStructureRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/models'
+  fullPaths:
+    | '/'
+    | '/models'
+    | '/investors/affiliated'
+    | '/investors/bizplan'
+    | '/investors/charter'
+    | '/investors/corpdocs'
+    | '/investors/facts'
+    | '/investors/reports'
+    | '/investors/resolutions'
+    | '/investors/structure'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/models'
-  id: '__root__' | '/' | '/models'
+  to:
+    | '/'
+    | '/models'
+    | '/investors/affiliated'
+    | '/investors/bizplan'
+    | '/investors/charter'
+    | '/investors/corpdocs'
+    | '/investors/facts'
+    | '/investors/reports'
+    | '/investors/resolutions'
+    | '/investors/structure'
+  id:
+    | '__root__'
+    | '/'
+    | '/models'
+    | '/investors/affiliated'
+    | '/investors/bizplan'
+    | '/investors/charter'
+    | '/investors/corpdocs'
+    | '/investors/facts'
+    | '/investors/reports'
+    | '/investors/resolutions'
+    | '/investors/structure'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ModelsRoute: typeof ModelsRoute
+  InvestorsAffiliatedRoute: typeof InvestorsAffiliatedRoute
+  InvestorsBizplanRoute: typeof InvestorsBizplanRoute
+  InvestorsCharterRoute: typeof InvestorsCharterRoute
+  InvestorsCorpdocsRoute: typeof InvestorsCorpdocsRoute
+  InvestorsFactsRoute: typeof InvestorsFactsRoute
+  InvestorsReportsRoute: typeof InvestorsReportsRoute
+  InvestorsResolutionsRoute: typeof InvestorsResolutionsRoute
+  InvestorsStructureRoute: typeof InvestorsStructureRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +176,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ModelsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/investors/affiliated': {
+      id: '/investors/affiliated'
+      path: '/investors/affiliated'
+      fullPath: '/investors/affiliated'
+      preLoaderRoute: typeof InvestorsAffiliatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/investors/bizplan': {
+      id: '/investors/bizplan'
+      path: '/investors/bizplan'
+      fullPath: '/investors/bizplan'
+      preLoaderRoute: typeof InvestorsBizplanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/investors/charter': {
+      id: '/investors/charter'
+      path: '/investors/charter'
+      fullPath: '/investors/charter'
+      preLoaderRoute: typeof InvestorsCharterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/investors/corpdocs': {
+      id: '/investors/corpdocs'
+      path: '/investors/corpdocs'
+      fullPath: '/investors/corpdocs'
+      preLoaderRoute: typeof InvestorsCorpdocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/investors/facts': {
+      id: '/investors/facts'
+      path: '/investors/facts'
+      fullPath: '/investors/facts'
+      preLoaderRoute: typeof InvestorsFactsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/investors/reports': {
+      id: '/investors/reports'
+      path: '/investors/reports'
+      fullPath: '/investors/reports'
+      preLoaderRoute: typeof InvestorsReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/investors/resolutions': {
+      id: '/investors/resolutions'
+      path: '/investors/resolutions'
+      fullPath: '/investors/resolutions'
+      preLoaderRoute: typeof InvestorsResolutionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/investors/structure': {
+      id: '/investors/structure'
+      path: '/investors/structure'
+      fullPath: '/investors/structure'
+      preLoaderRoute: typeof InvestorsStructureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ModelsRoute: ModelsRoute,
+  InvestorsAffiliatedRoute: InvestorsAffiliatedRoute,
+  InvestorsBizplanRoute: InvestorsBizplanRoute,
+  InvestorsCharterRoute: InvestorsCharterRoute,
+  InvestorsCorpdocsRoute: InvestorsCorpdocsRoute,
+  InvestorsFactsRoute: InvestorsFactsRoute,
+  InvestorsReportsRoute: InvestorsReportsRoute,
+  InvestorsResolutionsRoute: InvestorsResolutionsRoute,
+  InvestorsStructureRoute: InvestorsStructureRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

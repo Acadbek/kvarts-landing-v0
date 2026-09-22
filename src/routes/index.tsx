@@ -5,10 +5,10 @@ import { Award as AwardGlass, BookOpen as BookOpenGlass, Files as FilesGlass } f
 
 import * as m from '../paraglide/messages.js'
 import type { Locale } from '../paraglide/runtime.js'
-import { switchLocale } from '../lib/locale'
+import { getClientLocale, switchLocale } from '../lib/locale'
 import { NEWS, formatNewsDate } from '../lib/news.js'
 import { CATALOGS } from '../lib/catalog'
-import { LINKS, LiquidGlassNav, glassStyle, useLiquidSupported } from '../components/navbar'
+import { LINKS, LiquidGlassNav, NavAnchor, glassStyle, useLiquidSupported } from '../components/navbar'
 import { SlidingNumber } from '../components/sliding-number'
 import { Splide, SplideSlide } from '@splidejs/react-splide'
 import '@splidejs/react-splide/css/core'
@@ -154,19 +154,17 @@ function StatCell({ locale, value, decimals, unit, label, first = false }: { loc
   const v = useCountUp(value, run)
   const display = Number(v.toFixed(decimals))
   return (
-    <div ref={ref} className="group relative px-1 py-8 sm:px-8 sm:py-10">
+    <div ref={ref} className="group relative px-1 py-8 sm:px-6 sm:py-10">
       {/* ustun ajratgich — faqat kontent balandligida (padding'ni kesib o'tmaydi) */}
       {!first && (
-        <span aria-hidden="true" className="absolute bottom-8 left-0 top-8 hidden w-px bg-black/10 sm:bottom-10 sm:top-10 lg:block" />
+        <span aria-hidden="true" className="absolute bottom-8 left-0 top-8 hidden w-px bg-black/10 sm:bottom-10 sm:top-10 xl:block" />
       )}
-      <span aria-hidden="true" className="absolute left-1 top-0 h-[2px] w-10 bg-primary transition-all duration-500 group-hover:w-16 sm:left-8" />
-      <div className="flex flex-wrap items-baseline gap-x-3">
-        <div className="text-5xl font-semibold tracking-[-0.02em] tabular-nums text-neutral-900 sm:text-6xl">
-          <SlidingNumber value={display} decimalSeparator={locale === 'en' ? '.' : ','} />
-        </div>
-        <span className="text-sm font-semibold text-neutral-500">{unit}</span>
+      <span aria-hidden="true" className="absolute left-1 top-0 h-[2px] w-10 bg-primary transition-all duration-500 group-hover:w-16 sm:left-6" />
+      <div className="text-[2.5rem] font-medium leading-none tracking-[-0.02em] tabular-nums text-neutral-900 md:text-5xl xl:text-[3.25rem]">
+        <SlidingNumber value={display} decimalSeparator={locale === 'en' ? '.' : ','} />
       </div>
-      <p className="mt-3 max-w-[16rem] text-sm leading-relaxed text-neutral-500">{label}</p>
+      <p className="mt-3 text-sm font-semibold text-neutral-500">{unit}</p>
+      <p className="mt-1 max-w-[16rem] text-sm leading-relaxed text-neutral-500">{label}</p>
     </div>
   )
 }
@@ -253,8 +251,12 @@ function StatsSection({ locale }: { locale: Locale }) {
         <div className="absolute inset-0 opacity-[0.5] bg-[linear-gradient(rgb(0_0_0/0.04)_1px,transparent_1px),linear-gradient(90deg,rgb(0_0_0/0.04)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:radial-gradient(70%_60%_at_50%_40%,black,transparent)]" />
       </div>
       <div className="relative mx-auto max-w-6xl px-5 py-16 sm:py-24">
-        <SectionHead eyebrow={m.nav_factory({}, { locale })} title={m.sec_stats_title({}, { locale })} sub={m.sec_stats_sub({}, { locale })} />
-        <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-2 sm:mt-10 lg:grid-cols-4">
+        <Reveal>
+          <h2 className="max-w-2xl text-balance text-4xl font-medium leading-[1.08] tracking-[-0.01em] text-neutral-900 sm:text-5xl">
+            {m.sec_stats_title({}, { locale })}
+          </h2>
+        </Reveal>
+        <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-2 sm:mt-10 xl:grid-cols-4">
           {stats.map((s, idx) => (
             <StatCell key={s.label} locale={locale} value={s.value} decimals={s.decimals} unit={s.unit} label={s.label} first={idx === 0} />
           ))}
@@ -770,9 +772,9 @@ function ContactFooter({ locale }: { locale: Locale }) {
           <ul className="mt-4 flex flex-col gap-2.5">
             {LINKS.map((l) => (
               <li key={l.href}>
-                <a href={l.href} className="text-sm font-medium text-white/70 transition hover:text-white">
+                <NavAnchor href={l.href} className="text-sm font-medium text-white/70 transition hover:text-white">
                   {l.text({}, { locale })}
-                </a>
+                </NavAnchor>
               </li>
             ))}
           </ul>
@@ -836,7 +838,7 @@ function HeroSlideContent({ copy, locale, liquid, animated = true }: { copy: Her
   return (
     <div className="relative mx-auto w-full max-w-5xl px-5 text-center select-none">
       {/* badge */}
-      <a
+      <NavAnchor
         href="#zavod"
         className={`${animated ? 'rise-top rise-2 ' : 'invisible '}group inline-flex max-w-full items-center gap-2.5 rounded-full border border-white/20 py-1 pl-1 pr-3.5 text-xs text-white/85 shadow-sm transition-colors duration-300 hover:border-white/40 hover:text-white active:scale-[0.98] sm:text-[13px]`}
         style={glassStyle(liquid)}
@@ -846,7 +848,7 @@ function HeroSlideContent({ copy, locale, liquid, animated = true }: { copy: Her
         </span>
         <span className="truncate">{m.hero_eyebrow({}, { locale })}</span>
         <ArrowRight size={14} className="shrink-0 text-white/60 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
-      </a>
+      </NavAnchor>
 
       <div>
         <h1 className="mx-auto mt-7 max-w-5xl text-balance text-[clamp(2.125rem,1.5rem+4vw,3.375rem)] font-semibold leading-[1.08] tracking-[-0.02em] text-white">
@@ -925,7 +927,9 @@ function VercelHero() {
   } catch {
     /* router konteksti yo'q — default til bilan render */
   }
-  const [locale, setLocaleState] = useState<Locale>(initialLocale)
+  const [locale, setLocaleState] = useState<Locale>(() =>
+    typeof window === 'undefined' ? initialLocale : getClientLocale(initialLocale),
+  )
   const changeLocale = (code: Locale) => {
     switchLocale(code)
     setLocaleState(code)

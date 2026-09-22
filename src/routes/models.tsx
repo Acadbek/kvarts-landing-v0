@@ -2,7 +2,7 @@ import { createFileRoute, getRouteApi } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 
 import type { Locale } from '../paraglide/runtime.js'
-import { switchLocale } from '../lib/locale'
+import { getClientLocale, switchLocale } from '../lib/locale'
 import { CATALOGS } from '../lib/catalog'
 import { LiquidGlassNav } from '../components/navbar'
 import { ModelCard } from '../components/model-card'
@@ -16,7 +16,9 @@ function ModelsPage() {
   } catch {
     /* router konteksti yo'q — default */
   }
-  const [locale, setLocaleState] = useState<Locale>(initialLocale)
+  const [locale, setLocaleState] = useState<Locale>(() =>
+    typeof window === 'undefined' ? initialLocale : getClientLocale(initialLocale),
+  )
   const changeLocale = (code: Locale) => {
     switchLocale(code)
     setLocaleState(code)

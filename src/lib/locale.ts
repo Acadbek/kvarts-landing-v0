@@ -25,15 +25,43 @@ export const getInitialLocale = createServerFn({ method: 'GET' }).handler(async 
 })
 
 /**
- * Sahifani reload qilmasdan tilni almashtirish (cookie + localStorage yoziladi).
- * Runtime sinxronlash best-effort: u xato bersa ham UI holati yangilanadi
- * (komponent state alohida boshqariladi).
+ * Sahifani reload qilmasdan tilni almashtirish. Paraglide runtime'dan
+ * tashqari, cookie + localStorage ga to'g'ridan-to'g'ri ham yoziladi —
+ * runtime xato bersa ham (try/catch yutib yuboradi) til saqlanib qoladi.
  */
 export function switchLocale(locale: Locale) {
   try {
     setLocale(locale, { reload: false })
   } catch {
-    /* e'tiborsiz — UI baribir yangilanadi */
+    /* e'tiborsiz — pastda qo'lda saqlanadi */
+  }
+  try {
+    localStorage.setItem('PARAGLIDE_LOCALE', locale)
+  } catch {
+    /* private mode va h.k. — e'tiborsiz */
+  }
+  try {
+    document.cookie = `PARAGLIDE_LOCALE=${locale}; path=/; max-age=34560000`
+  } catch {
+    /* e'tiborsiz */
   }
   if (typeof document !== 'undefined') document.documentElement.lang = locale
+}
+
+/**
+ * Client'da joriy til: avval brauzer xotirasi (localStorage → cookie),
+ * topilmasa SSR loader bergan qiymat. SPA navigatsiyada yangi sahifa
+ * root loader'dagi eskirgan qiymatdan emas, foydalanuvchi tanlagan
+ * tildan boshlashi uchun kerak.
+ */
+export function getClientLocale(fallback: Locale): Locale {
+  try {
+    const stored = localStorage.getItem('PARAGLIDE_LOCALE')
+    if (stored === 'ru' || stored === 'en' || stored === 'uz') return stored
+    const match = document.cookie.match(/(?:^|;\s*)PARAGLIDE_LOCALE=(ru|en|uz)(?:;|$)/)
+    if (match) return match[1] as Locale
+  } catch {
+    /* SSR yoki bloklangan storage — fallback */
+  }
+  return fallback
 }

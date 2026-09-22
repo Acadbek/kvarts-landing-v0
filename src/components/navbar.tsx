@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ComponentType } from 'react'
+import { Link } from '@tanstack/react-router'
 import { Check, ChevronDown, ChevronRight, Menu, X } from 'lucide-react'
 import {
   Bell as BellGlass,
@@ -43,22 +44,45 @@ export const LINKS = [
   { text: m.nav_news, href: '#yangiliklar' },
 ] as const
 
-const DOCS = 'https://docs.kvarts.uz/index.php'
-
 const INVESTOR_LINKS = [
-  { icon: FilesGlass, title: m.inv_charter, desc: m.inv_charter_d, href: `${DOCS}?subcat=6` },
-  { icon: BellGlass, title: m.inv_facts, desc: m.inv_facts_d, href: `${DOCS}?subcat=11` },
-  { icon: SquareChartLineGlass, title: m.inv_reports, desc: m.inv_reports_d, href: `${DOCS}?subcat=2` },
-  { icon: SuitcaseGlass, title: m.inv_bizplan, desc: m.inv_bizplan_d, href: 'https://docs.kvarts.uz/' },
-  { icon: UsersGlass, title: m.inv_affiliated, desc: m.inv_affiliated_d, href: `${DOCS}?subcat=1` },
-  { icon: SitemapGlass, title: m.inv_structure, desc: m.inv_structure_d, href: 'https://docs.kvarts.uz/files/%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D0%B0%2030.06.2025%D0%B3.pdf' },
-  { icon: FoldersGlass, title: m.inv_corpdocs, desc: m.inv_corpdocs_d, href: `${DOCS}?subcat=7` },
-  { icon: ClipboardCheckGlass, title: m.inv_resolutions, desc: m.inv_resolutions_d, href: `${DOCS}?subcat=1` },
+  { icon: FilesGlass, title: m.inv_charter, desc: m.inv_charter_d, href: '/investors/charter', external: false },
+  { icon: FoldersGlass, title: m.inv_corpdocs, desc: m.inv_corpdocs_d, href: '/investors/corpdocs', external: false },
+  { icon: SitemapGlass, title: m.inv_structure, desc: m.inv_structure_d, href: '/investors/structure', external: false },
+  { icon: SquareChartLineGlass, title: m.inv_reports, desc: m.inv_reports_d, href: '/investors/reports', external: false },
+  { icon: SuitcaseGlass, title: m.inv_bizplan, desc: m.inv_bizplan_d, href: '/investors/bizplan', external: false },
+  { icon: BellGlass, title: m.inv_facts, desc: m.inv_facts_d, href: '/investors/facts', external: false },
+  { icon: UsersGlass, title: m.inv_affiliated, desc: m.inv_affiliated_d, href: '/investors/affiliated', external: false },
+  { icon: ClipboardCheckGlass, title: m.inv_resolutions, desc: m.inv_resolutions_d, href: '/investors/resolutions', external: false },
 ] as const
 
 /** Boshqa sahifada (#models) turganda anchor'lar bosh sahifaga olib boradi. */
 function home(href: string): string {
   return href.startsWith('#') ? `/${href}` : href
+}
+
+/** Ichki havola — SPA (TanStack Link), tashqi havola — native <a>.
+ * `/#bo'lim` ko'rinishidagi hash'lar Link `to` + `hash` ga ajratiladi. */
+export function NavAnchor({ href, children, ...props }: any) {
+  if (/^https?:\/\//.test(href)) {
+    return (
+      <a href={href} target="_blank" rel="noreferrer" {...props}>
+        {children}
+      </a>
+    )
+  }
+  const hashAt = href.indexOf('#')
+  if (hashAt >= 0) {
+    return (
+      <Link to={href.slice(0, hashAt) || '/'} hash={href.slice(hashAt + 1)} {...props}>
+        {children}
+      </Link>
+    )
+  }
+  return (
+    <Link to={href} {...props}>
+      {children}
+    </Link>
+  )
 }
 
 function LanguageMenu({ locale, onSwitch }: { locale: Locale; onSwitch: (code: Locale) => void }) {
@@ -232,17 +256,21 @@ function InvestorsMenu({ locale }: { locale: Locale }) {
           <NavigationMenuContent>
             <div className="w-[42rem] max-w-[calc(100vw-3rem)] p-2">
               {/* Ichki qatlam — faqat qo'shimcha blur, fon rangi o'zgarmaydi */}
-              <ul className="grid grid-cols-2 gap-1 rounded-xl p-1 backdrop-blur-2xl">
-                {INVESTOR_LINKS.map((l, i) => (
-                  <InvestorListItem
-                    key={`${l.href}#${i}`}
-                    icon={l.icon}
-                    href={home(l.href)}
-                    title={l.title({}, { locale })}
-                    desc={l.desc({}, { locale })}
-                  />
-                ))}
-              </ul>
+              <div className="rounded-xl p-1 backdrop-blur-2xl">
+                <ul className="grid grid-cols-2 gap-1">
+                  {INVESTOR_LINKS.map((l, i) => (
+                    <InvestorListItem
+                      key={`${l.href}#${i}`}
+                      icon={l.icon}
+                      href={home(l.href)}
+                      title={l.title({}, { locale })}
+                      desc={l.desc({}, { locale })}
+                      external={l.external}
+                      onNavigate={() => setValue(null)}
+                    />
+                  ))}
+                </ul>
+              </div>
             </div>
           </NavigationMenuContent>
         </NavigationMenuItem>
@@ -252,27 +280,42 @@ function InvestorsMenu({ locale }: { locale: Locale }) {
   )
 }
 
-function InvestorListItem({ icon: Icon, title, desc, href }: { icon: ComponentType<{ size?: number | string; className?: string; stopColor1?: string; stopColor2?: string }>; title: string; desc: string; href: string }) {
+function InvestorListItem({ icon: Icon, title, desc, href, external, onNavigate }: { icon: ComponentType<{ size?: number | string; className?: string; stopColor1?: string; stopColor2?: string }>; title: string; desc: string; href: string; external: boolean; onNavigate?: () => void }) {
+  const inner = (
+    <>
+      {/* Asl Nucleo glass SVG — qora gradient primary gradientga moslandi */}
+      <Icon size={24} stopColor1="#62A7FA" stopColor2="#00408A" className="h-6 w-6 shrink-0 drop-shadow-sm" />
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-semibold leading-snug tracking-[0.02em] text-neutral-900">{title}</span>
+        <span title={desc} className="mt-px block truncate text-[13px] text-neutral-600">{desc}</span>
+      </span>
+      <ChevronRight
+        size={15}
+        className="shrink-0 text-neutral-300 transition-all duration-150 group-hover:translate-x-0.5 group-hover:text-neutral-900"
+      />
+    </>
+  )
+  const className = "group flex items-center gap-3 rounded-xl px-2.5 py-2.5 outline-none transition-colors duration-150 hover:bg-black/[0.06] focus-visible:bg-black/[0.06]"
+  if (external) {
+    return (
+      <li>
+        <NavigationMenuLink
+          href={href}
+          closeOnClick
+          target="_blank"
+          rel="noreferrer"
+          className={className}
+        >
+          {inner}
+        </NavigationMenuLink>
+      </li>
+    )
+  }
   return (
     <li>
-      <NavigationMenuLink
-        href={href}
-        closeOnClick
-        target="_blank"
-        rel="noreferrer"
-        className="group flex items-center gap-3 rounded-xl px-2.5 py-2.5 outline-none transition-colors duration-150 hover:bg-black/[0.06] focus-visible:bg-black/[0.06]"
-      >
-        {/* Asl Nucleo glass SVG — qora gradient primary gradientga moslandi */}
-        <Icon size={24} stopColor1="#62A7FA" stopColor2="#00408A" className="h-6 w-6 shrink-0 drop-shadow-sm" />
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-semibold tracking-[0.02em] text-neutral-900">{title}</span>
-          <span className="mt-px block truncate text-[13px] text-neutral-600">{desc}</span>
-        </span>
-        <ChevronRight
-          size={15}
-          className="shrink-0 text-neutral-300 transition-all duration-150 group-hover:translate-x-0.5 group-hover:text-neutral-900"
-        />
-      </NavigationMenuLink>
+      <Link to={href} onClick={onNavigate} className={className}>
+        {inner}
+      </Link>
     </li>
   )
 }
@@ -339,7 +382,7 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
 
       <div className="mx-auto flex w-full max-w-6xl flex-col items-stretch">
         <div ref={pillRef} className="flex h-16 w-full items-center justify-between gap-1 rounded-full py-1.5 pr-3.5 pl-2.5" style={pillStyle}>
-          <a href={home("#hero")} className="flex shrink-0 items-center gap-1.5" aria-label="Kvarts AJ">
+          <NavAnchor href={home("#hero")} className="flex shrink-0 items-center gap-1.5" aria-label="Kvarts AJ">
             <img src="/logo.png" alt="Kvarts AJ" width={44} height={44} className="h-11 w-11 rounded-full object-cover" />
             <span
               className="text-[28px] font-bold leading-none tracking-wide whitespace-nowrap text-primary"
@@ -347,27 +390,27 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
             >
               {m.brand_mark({}, { locale })}
             </span>
-          </a>
+          </NavAnchor>
 
           <nav className="hidden flex-1 items-center justify-center gap-3 lg:flex" aria-label="Asosiy">
             {LINKS.slice(0, 2).map((l) => (
-              <a
+              <NavAnchor
                 key={l.href}
                 href={home(l.href)}
                 className="whitespace-nowrap rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[15px] font-semibold text-white transition-colors duration-300 hover:border-white/60"
               >
                 {l.text({}, { locale })}
-              </a>
+              </NavAnchor>
             ))}
             <InvestorsMenu locale={locale} />
             {LINKS.slice(2).map((l) => (
-              <a
+              <NavAnchor
                 key={l.href}
                 href={home(l.href)}
                 className="whitespace-nowrap rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[15px] font-semibold text-white transition-colors duration-300 hover:border-white/60"
               >
                 {l.text({}, { locale })}
-              </a>
+              </NavAnchor>
             ))}
           </nav>
 
@@ -401,7 +444,7 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
               {LINKS.slice(0, 2).map((l, i) => {
                 const Icon = [BoxArchiveGlass, HouseGlass][i]
                 return (
-                  <a
+                  <NavAnchor
                     key={l.href}
                     href={home(l.href)}
                     onClick={() => setMenu(false)}
@@ -410,7 +453,7 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
                     <Icon size={32} stopColor1="#62A7FA" stopColor2="#00408A" className="h-8 w-8 shrink-0 drop-shadow-sm" />
                     <span className="flex-1">{l.text({}, { locale })}</span>
                     <ChevronRight size={16} className="shrink-0 text-neutral-500" />
-                  </a>
+                  </NavAnchor>
                 )
               })}
               <details className="group">
@@ -419,25 +462,36 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
                   <span className="flex-1">{m.nav_investors({}, { locale })}</span>
                   <ChevronDown size={16} className="shrink-0 text-neutral-500 transition-transform group-open:rotate-180" />
                 </summary>
-                <div className="mt-1 mb-1 ml-[52px] flex flex-col gap-0.5 border-l border-white/15 pl-3">
-                  {INVESTOR_LINKS.map((l, i) => (
-                    <a
-                      key={`${l.href}#${i}`}
-                      href={home(l.href)}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={() => setMenu(false)}
-                      className="block rounded-xl px-3 py-2.5 text-[15px] text-neutral-300 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10 hover:text-white"
-                    >
-                      {l.title({}, { locale })}
-                    </a>
-                  ))}
+                <div className="mt-1 mb-1 ml-[52px] flex flex-col gap-2 border-l border-white/15 pl-3">
+                  {INVESTOR_LINKS.map((l, i) =>
+                    l.external ? (
+                      <a
+                        key={`${l.href}#${i}`}
+                        href={home(l.href)}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={() => setMenu(false)}
+                        className="block rounded-xl px-3 py-2.5 text-[15px] text-neutral-300 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10 hover:text-white"
+                      >
+                        {l.title({}, { locale })}
+                      </a>
+                    ) : (
+                      <Link
+                        key={`${l.href}#${i}`}
+                        to={home(l.href)}
+                        onClick={() => setMenu(false)}
+                        className="block rounded-xl px-3 py-2.5 text-[15px] text-neutral-300 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10 hover:text-white"
+                      >
+                        {l.title({}, { locale })}
+                      </Link>
+                    ),
+                  )}
                 </div>
               </details>
               {LINKS.slice(2).map((l, i) => {
                 const Icon = [MoneyBillGlass, MsgsGlass][i]
                 return (
-                  <a
+                  <NavAnchor
                     key={l.href}
                     href={home(l.href)}
                     onClick={() => setMenu(false)}
@@ -446,10 +500,10 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
                     <Icon size={32} stopColor1="#62A7FA" stopColor2="#00408A" className="h-8 w-8 shrink-0 drop-shadow-sm" />
                     <span className="flex-1">{l.text({}, { locale })}</span>
                     <ChevronRight size={16} className="shrink-0 text-neutral-500" />
-                  </a>
+                  </NavAnchor>
                 )
               })}
-              <a
+              <NavAnchor
                 href={home("#aloqa")}
                 onClick={() => setMenu(false)}
                 className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-base font-semibold text-neutral-100 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10"
@@ -457,7 +511,7 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
                 <PaperPlaneGlass size={32} stopColor1="#62A7FA" stopColor2="#00408A" className="h-8 w-8 shrink-0 drop-shadow-sm" />
                 <span className="flex-1">{m.nav_contacts({}, { locale })}</span>
                 <ChevronRight size={16} className="shrink-0 text-neutral-500" />
-              </a>
+              </NavAnchor>
               <div className="mt-2 rounded-2xl bg-white/[0.07] p-1.5">
                 <div className="flex gap-1">
                   {LANGS.map((l) => {
