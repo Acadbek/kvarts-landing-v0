@@ -1,13 +1,16 @@
 import { createFileRoute, getRouteApi } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
-import { ArrowRight, ArrowUpRight, Award, Banknote, BookOpen, CalendarDays, ChevronLeft, ChevronRight, Factory, Landmark, Mail, MapPin, Phone } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Award, Banknote, CalendarDays, ChevronLeft, ChevronRight, Factory, Landmark, Mail, MapPin, Phone } from 'lucide-react'
+import { Award as AwardGlass, BookOpen as BookOpenGlass, Files as FilesGlass } from 'nucleo-glass-icons/react'
 
 import * as m from '../paraglide/messages.js'
 import type { Locale } from '../paraglide/runtime.js'
 import { switchLocale } from '../lib/locale'
 import { NEWS, formatNewsDate } from '../lib/news.js'
 import { CATALOGS } from '../lib/catalog'
-import { FILTER_ID, LINKS, LiquidGlassNav, glassStyle, useLiquidSupported } from '../components/navbar'
+import { LINKS, LiquidGlassNav, glassStyle, useLiquidSupported } from '../components/navbar'
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '../components/ui/carousel'
+import { SlidingNumber } from '../components/sliding-number'
 
 export const Route = createFileRoute('/')({ component: VercelHero })
 
@@ -125,7 +128,7 @@ function money(n: number): string {
   return `${grp(n)},${(n % 1).toFixed(2).slice(2)}`
 }
 
-function StatCell({ locale, value, decimals, unit, label }: { locale: Locale; value: number; decimals: number; unit: string; label: string }) {
+function StatCell({ locale, value, decimals, unit, label, first = false }: { locale: Locale; value: number; decimals: number; unit: string; label: string; first?: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
   const [run, setRun] = useState(false)
   useEffect(() => {
@@ -148,12 +151,21 @@ function StatCell({ locale, value, decimals, unit, label }: { locale: Locale; va
     return () => io.disconnect()
   }, [])
   const v = useCountUp(value, run)
-  const num = v.toFixed(decimals).replace('.', locale === 'en' ? '.' : ',')
+  const display = Number(v.toFixed(decimals))
   return (
-    <div ref={ref} className="border-t-2 border-neutral-900 pt-5">
-      <p className="text-5xl font-semibold tracking-[-0.02em] tabular-nums text-neutral-900 sm:text-6xl">{num}</p>
-      <p className="mt-3 text-sm font-semibold text-neutral-900">{unit}</p>
-      <p className="mt-1 text-sm leading-relaxed text-neutral-500">{label}</p>
+    <div ref={ref} className="group relative px-1 py-8 sm:px-8 sm:py-10">
+      {/* ustun ajratgich — faqat kontent balandligida (padding'ni kesib o'tmaydi) */}
+      {!first && (
+        <span aria-hidden="true" className="absolute bottom-8 left-0 top-8 hidden w-px bg-black/10 sm:bottom-10 sm:top-10 lg:block" />
+      )}
+      <span aria-hidden="true" className="absolute left-1 top-0 h-[2px] w-10 bg-primary transition-all duration-500 group-hover:w-16 sm:left-8" />
+      <div className="flex flex-wrap items-baseline gap-x-3">
+        <div className="text-5xl font-semibold tracking-[-0.02em] tabular-nums text-neutral-900 sm:text-6xl">
+          <SlidingNumber value={display} decimalSeparator={locale === 'en' ? '.' : ','} />
+        </div>
+        <span className="text-sm font-semibold text-neutral-500">{unit}</span>
+      </div>
+      <p className="mt-3 max-w-[16rem] text-sm leading-relaxed text-neutral-500">{label}</p>
     </div>
   )
 }
@@ -161,7 +173,7 @@ function StatCell({ locale, value, decimals, unit, label }: { locale: Locale; va
 function QuickLinks({ locale }: { locale: Locale }) {
   const cards = [
     {
-      icon: BookOpen,
+      icon: BookOpenGlass,
       title: locale === 'ru' ? 'Каталоги продукции' : locale === 'en' ? 'Product catalogs' : 'Mahsulot kataloglari',
       desc:
         locale === 'ru'
@@ -174,7 +186,7 @@ function QuickLinks({ locale }: { locale: Locale }) {
       external: false,
     },
     {
-      icon: Award,
+      icon: AwardGlass,
       title: locale === 'ru' ? 'Сертификаты качества' : locale === 'en' ? 'Quality certificates' : 'Sifat sertifikatlari',
       desc:
         locale === 'ru'
@@ -187,7 +199,7 @@ function QuickLinks({ locale }: { locale: Locale }) {
       external: false,
     },
     {
-      icon: Landmark,
+      icon: FilesGlass,
       title: locale === 'ru' ? 'Корпоративные сведения' : locale === 'en' ? 'Corporate disclosure' : 'Korporativ ma’lumotlar',
       desc:
         locale === 'ru'
@@ -208,16 +220,14 @@ function QuickLinks({ locale }: { locale: Locale }) {
             <a
               href={c.href}
               {...(c.external ? { target: '_blank', rel: 'noreferrer' } : {})}
-              className="group block h-full rounded-2xl border border-black/10 bg-white p-6 shadow-[0_1px_2px_rgb(0_0_0/0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:border-black/20 hover:shadow-[0_12px_32px_-12px_rgb(0_0_0/0.18)]"
+              className="group flex h-full flex-col rounded-2xl border border-black/10 bg-white p-6 shadow-[0_1px_2px_rgb(0_0_0/0.05)] transition-colors duration-200 hover:border-primary"
             >
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-neutral-100 text-neutral-700 ring-1 ring-black/[0.06] ring-inset transition-colors duration-200 group-hover:bg-neutral-200 group-hover:text-neutral-900">
-                <c.icon size={20} />
-              </span>
+              <c.icon size={40} stopColor1="#62A7FA" stopColor2="#00408A" className="h-10 w-10 shrink-0 drop-shadow-sm" />
               <span className="mt-4 block text-lg font-bold tracking-tight text-neutral-900">{c.title}</span>
               <span className="mt-1 block text-sm leading-relaxed text-neutral-500">{c.desc}</span>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-900">
+              <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-semibold text-neutral-900">
                 {c.link}
-                <ArrowUpRight size={15} className="text-neutral-400 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-neutral-900" />
+                <ArrowUpRight size={15} className="text-primary transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </span>
             </a>
           </Reveal>
@@ -235,12 +245,17 @@ function StatsSection({ locale }: { locale: Locale }) {
     { value: 30, decimals: 0, unit: m.stat_glass_u({}, { locale }), label: m.stat_glass_l({}, { locale }) },
   ]
   return (
-    <section id="zavod" className="relative scroll-mt-24 border-t border-black/10 bg-white">
+    <section id="zavod" className="relative scroll-mt-24 overflow-hidden border-t border-black/10 bg-white">
+      {/* fon: yengil primary glow + yupqa grid */}
+      <div aria-hidden="true" className="absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(65%_55%_at_50%_0%,rgb(0_111_220/0.10),transparent_70%)]" />
+        <div className="absolute inset-0 opacity-[0.5] bg-[linear-gradient(rgb(0_0_0/0.04)_1px,transparent_1px),linear-gradient(90deg,rgb(0_0_0/0.04)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:radial-gradient(70%_60%_at_50%_40%,black,transparent)]" />
+      </div>
       <div className="relative mx-auto max-w-6xl px-5 py-16 sm:py-24">
         <SectionHead eyebrow={m.nav_factory({}, { locale })} title={m.sec_stats_title({}, { locale })} sub={m.sec_stats_sub({}, { locale })} />
-        <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
-          {stats.map((s) => (
-            <StatCell key={s.label} locale={locale} value={s.value} decimals={s.decimals} unit={s.unit} label={s.label} />
+        <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-2 sm:mt-10 lg:grid-cols-4">
+          {stats.map((s, idx) => (
+            <StatCell key={s.label} locale={locale} value={s.value} decimals={s.decimals} unit={s.unit} label={s.label} first={idx === 0} />
           ))}
         </div>
       </div>
@@ -802,38 +817,61 @@ const PARTNER_LOGOS = [
 ]
 
 const HERO_SLIDES = [
-  { image: '/ENZ_4950.jpg', text: 0 },
+  { image: '/ENZ_4950.jpg', text: 3 },
   { image: '/ENZ_5391.jpg', text: 1 },
   { image: '/ENZ_5210.jpg', text: 0 },
   { image: '/ENZ_5316.jpg', text: 2 },
+  { image: '/ENZ_1186.jpg', text: 0 },
 ]
 
 function VercelHero() {
-  const [tick, setTick] = useState(0)
-  const [paused, setPaused] = useState(false)
+  const [api, setApi] = useState<CarouselApi>()
+  const [selected, setSelected] = useState(0)
+  const [activeIdx, setActiveIdx] = useState(0)
   const liquid = useLiquidSupported()
 
-  // Har 6 soniyada keyingi slayd. Faqat aniq `paused` holatida to'xtaydi —
-  // hover/focus/visibility/decode holatlariga bog'liq emas, shuning uchun
-  // tab almashtirish yoki scroll'dan keyin "qotib qolish" bo'lmaydi.
-  // Background tab'da brauzer intervalni o'zi throttle qiladi, qaytganda
-  // davom etadi.
+  // Dots/aria uchun — slayd tanlanganda (settle).
   useEffect(() => {
-    if (paused) return
-    const id = window.setInterval(() => setTick((t) => t + 1), 6000)
+    if (!api) return
+    const onSelect = () => {
+      const snap = api.selectedScrollSnap()
+      setSelected(snap)
+      setActiveIdx(snap)
+    }
+    onSelect()
+    api.on('select', onSelect)
+    api.on('reInit', onSelect)
+    return () => {
+      api.off('select', onSelect)
+      api.off('reInit', onSelect)
+    }
+  }, [api])
+
+  // Avtoplay — har 6 soniyada keyingi slayd. Taymer har slayd
+  // almashganda (avto yoki qo'lda — swipe) NOLDAN qayta boshlanadi:
+  // effekt `selected` ga bog'langan, shuning uchun qo'lda o'tkazsangiz
+  // keyingi avto-o'tish to'liq 6 sekunddan keyin bo'ladi.
+  // Zoom (`activeIdx`) harakat BOSHLANISHIda yoqiladi: `select` settle'da
+  // keladi, o'sha payt React update + qatlam yaratish slayd oxirida
+  // 0.5s tiqilishga sabab bo'lardi.
+  useEffect(() => {
+    if (!api) return
+    const id = window.setInterval(() => {
+      const next = (api.selectedScrollSnap() + 1) % HERO_SLIDES.length
+      setActiveIdx(next)
+      api.scrollNext()
+    }, 6000)
     return () => window.clearInterval(id)
-  }, [paused])
+  }, [api, selected])
 
-  const slide = tick % HERO_SLIDES.length
-  const textIdx = HERO_SLIDES[slide].text
-
-  // Slayd rasmlarni fonda oldindan yuklash — slayd almashishni bloklamaydi.
-  // Oldingi `img.decode()` + `imagesReady` geyti bitta rasm xatosida ham
-  // slayderni umrbod to'xtatib qo'yardi.
+  // Barcha slayd rasmlarini darhol (past prioritetda) yuklab + dekodlash —
+  // slayd kelganda "tayyor emas" bo'lib o'rtada tiqilish/pop bo'lmasligi uchun.
   useEffect(() => {
-    HERO_SLIDES.forEach(({ image }) => {
+    HERO_SLIDES.forEach(({ image }, idx) => {
       const img = new Image()
+      if (idx > 0) img.fetchPriority = 'low'
       img.src = image
+      img.decode?.().catch(() => {})
     })
   }, [])
   // Root loader hali tayyor bo'lmasa (masalan, dev'da dep re-optimizatsiya paytida
@@ -877,6 +915,10 @@ function VercelHero() {
       titleLines: splitTwoLines(m.hero_s3_title({}, { locale })),
       description: m.hero_s3_desc({}, { locale }),
     },
+    {
+      titleLines: splitTwoLines(m.hero_s4_title({}, { locale })),
+      description: m.hero_s4_desc({}, { locale }),
+    },
   ]
 
   // Refresh'da brauzer eski scroll'ni tiklab qo'ymasligi uchun — har doim tepada boshlanadi.
@@ -901,106 +943,88 @@ function VercelHero() {
       <LiquidGlassNav locale={locale} changeLocale={changeLocale} />
 
       <main id="hero" className="relative overflow-hidden">
-        <section
-          className="hero-scene relative flex min-h-[100svh] flex-col justify-center overflow-hidden bg-neutral-950 pb-28"
-        >
-          {/* slayd-shou pauza boshqaruvi — avtomatik harakat >5s bo'lgani uchun (liquid glass, kam blur, glass chekka) */}
-          <button
-            type="button"
-            onClick={() => setPaused((p) => !p)}
-            aria-pressed={paused}
-            aria-label={paused ? 'Slayd-shouni davom ettirish' : 'Slayd-shouni pauza qilish'}
-            className="absolute right-4 bottom-4 z-10 grid h-10 w-10 cursor-pointer place-items-center rounded-full text-white transition active:scale-[0.98] sm:right-6 sm:bottom-6"
-            style={
-              liquid
-                ? {
-                    background: 'rgba(255,255,255,0.06)',
-                    backdropFilter: `url(#${FILTER_ID}) saturate(1.6) blur(0.5px)`,
-                    WebkitBackdropFilter: `url(#${FILTER_ID}) saturate(1.6) blur(0.5px)`,
-                    boxShadow:
-                      'inset 0 0 0 1px rgba(255,255,255,0.28), inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -1px 2px rgba(0,0,0,0.1), 0 4px 16px rgba(0,0,0,0.25)',
-                  }
-                : {
-                    background: 'rgba(255,255,255,0.08)',
-                    backdropFilter: 'blur(6px) saturate(1.6)',
-                    WebkitBackdropFilter: 'blur(6px) saturate(1.6)',
-                    boxShadow:
-                      'inset 0 0 0 1px rgba(255,255,255,0.28), inset 0 1px 1px rgba(255,255,255,0.35), 0 4px 16px rgba(0,0,0,0.25)',
-                  }
-            }
+        <section className="hero-scene relative overflow-hidden bg-neutral-950">
+          <Carousel
+            opts={{ loop: true }}
+            setApi={setApi}
+            aria-label={m.hero_eyebrow({}, { locale })}
           >
-            {paused ? <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z" /></svg> : <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>}
-          </button>
+            <CarouselContent className="ml-0">
+              {HERO_SLIDES.map(({ image }, i) => {
+                const copy = heroCopy[HERO_SLIDES[i].text]
+                const isActive = i === activeIdx
+                const isSelected = i === selected
+                return (
+                  <CarouselItem
+                    key={image}
+                    aria-label={`${i + 1} / ${HERO_SLIDES.length}`}
+                    aria-hidden={!isSelected}
+                    inert={!isSelected}
+                    className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden py-28 pl-0"
+                  >
+                    {/* slayd foni */}
+                    <div className="absolute inset-0" aria-hidden="true">
+                      <img
+                        src={image}
+                        alt=""
+                        loading="eager"
+                        decoding="async"
+                        draggable={false}
+                        data-active={isActive}
+                        fetchPriority={i === 0 ? 'high' : 'low'}
+                        className="hero-slide-img h-full w-full object-cover"
+                      />
+                    </div>
+                    {/* matn o'qilishi uchun tekis parda (flat, gradient yo'q) */}
+                    <div className="absolute inset-0 bg-black/55" aria-hidden="true" />
 
-          {/* slayd-shou foni */}
-          <div className="absolute inset-0 isolate" aria-hidden="true">
-            {HERO_SLIDES.map(({ image }, i) => (
-              <div
-                key={image}
-                className="hero-background absolute inset-0"
-                data-active={i === slide}
-              >
-                <img
-                  src={image}
-                  alt=""
-                  loading="eager"
-                  fetchPriority={i === 0 ? 'high' : 'low'}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            ))}
-            {/* matn o'qilishi uchun tekis parda (flat, gradient yo'q) */}
-            <div className="absolute inset-0 z-[2] bg-black/55" />
-          </div>
+                    <div className="relative mx-auto w-full max-w-5xl px-5 text-center select-none">
+                      {/* badge */}
+                      <a
+                        href="#hero-cta"
+                        tabIndex={isSelected ? undefined : -1}
+                        className="group inline-flex max-w-full items-center gap-2.5 rounded-full border border-white/20 py-1 pl-1 pr-3.5 text-xs text-white/85 shadow-sm transition-colors duration-300 hover:border-white/40 hover:text-white active:scale-[0.98] sm:text-[13px]"
+                        style={glassStyle(liquid)}
+                      >
+                        <span className="shrink-0 rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-semibold text-white">
+                          {m.hero_badge_new({}, { locale })}
+                        </span>
+                        <span className="truncate">{m.hero_eyebrow({}, { locale })}</span>
+                        <ArrowRight size={14} className="shrink-0 text-white/60 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
+                      </a>
 
-          <div className="relative mx-auto max-w-5xl px-5 py-28 text-center">
-          {/* badge */}
-          <a
-            href="#hero-cta"
-            className="group inline-flex max-w-full items-center gap-2.5 rounded-full border border-white/20 py-1 pl-1 pr-3.5 text-xs text-white/85 shadow-sm transition-colors duration-300 hover:border-white/40 hover:text-white active:scale-[0.98] sm:text-[13px]"
-            style={glassStyle(liquid)}
-          >
-            <span className="shrink-0 rounded-full bg-white px-2.5 py-0.5 text-[11px] font-semibold text-black">
-              {m.hero_badge_new({}, { locale })}
-            </span>
-            <span className="truncate">{m.hero_eyebrow({}, { locale })}</span>
-            <ArrowRight size={14} className="shrink-0 text-white/60 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
-          </a>
+                      <div>
+                        <h1 className="mx-auto mt-7 max-w-5xl text-balance text-[clamp(2.125rem,1.5rem+4vw,3.375rem)] font-semibold leading-[1.08] tracking-[-0.02em] text-white">
+                          {copy.titleLines.map((line, j) => (
+                            <span key={j} className="block">{line}</span>
+                          ))}
+                        </h1>
+                        <p className="mx-auto mt-5 max-w-xl text-pretty text-base leading-relaxed text-white/85 sm:text-lg">
+                          {copy.description}
+                        </p>
+                      </div>
 
-          <div>
-            <h1 className="mx-auto mt-7 grid max-w-5xl text-balance text-[clamp(2.125rem,1.5rem+4vw,3.375rem)] font-semibold leading-[1.08] tracking-[-0.02em] text-white">
-              {heroCopy.map(({ titleLines }, i) => (
-                <span key={i} className="hero-copy" data-active={i === textIdx} aria-hidden={i !== textIdx}>
-                  {titleLines.map((line, j) => (
-                    <span key={j} className="block">{line}</span>
-                  ))}
-                </span>
-              ))}
-            </h1>
-            <div className="mx-auto mt-5 grid max-w-xl text-pretty text-base leading-relaxed text-white/85 sm:text-lg">
-              {heroCopy.map(({ description }, i) => (
-                <p key={i} className="hero-copy hero-description" data-active={i === textIdx} aria-hidden={i !== textIdx}>
-                  {description}
-                </p>
-              ))}
-            </div>
-          </div>
-
-          {/* CTA — badge bilan bir xil struktura/uslub */}
-          <div id="hero-cta" className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <button
-              type="button"
-              onClick={() => document.getElementById('zavod')?.scrollIntoView({ behavior: 'smooth' })}
-              className="rise rise-4 group inline-flex w-full cursor-pointer items-center gap-2.5 rounded-full border border-white/20 py-1.5 pl-1.5 pr-5 text-sm font-semibold text-white/90 shadow-sm transition-colors duration-300 hover:border-white/40 hover:text-white active:scale-[0.98] sm:w-auto"
-              style={glassStyle(liquid)}
-            >
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white text-black">
-                <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-              </span>
-              <span className="truncate">{m.hero_cta_more({}, { locale })}</span>
-            </button>
-          </div>
-          </div>
+                      {/* CTA — badge bilan bir xil struktura/uslub */}
+                      <div id={i === 0 ? 'hero-cta' : undefined} className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                        <button
+                          type="button"
+                          tabIndex={isSelected ? undefined : -1}
+                          onClick={() => document.getElementById('zavod')?.scrollIntoView({ behavior: 'smooth' })}
+                          className="rise rise-4 group inline-flex w-full cursor-pointer items-center gap-2.5 rounded-full border border-white/20 py-1.5 pl-1.5 pr-5 text-sm font-semibold text-white/90 shadow-sm transition-colors duration-300 hover:border-white/40 hover:text-white active:scale-[0.98] sm:w-auto"
+                          style={glassStyle(liquid)}
+                        >
+                          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-white">
+                            <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                          </span>
+                          <span className="truncate">{m.hero_cta_more({}, { locale })}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </CarouselItem>
+                )
+              })}
+            </CarouselContent>
+          </Carousel>
         </section>
 
         <QuickLinks locale={locale} />

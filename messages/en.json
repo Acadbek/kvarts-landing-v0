@@ -1,5 +1,6 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
+  "brand_mark": "KVARTS JSC",
   "nav_factory": "Plant",
   "nav_products": "Products",
   "nav_investors": "For shareholders and investors",
@@ -36,6 +37,8 @@
   "hero_s2_desc": "Our new line will serve the prosperity of the Republic!",
   "hero_s3_title": "Enterprise development strategy",
   "hero_s3_desc": "Production modernization, new capacities and sustainable growth for years ahead.",
+  "hero_s4_title": "Uzbekistan's leading glass plant, JSC Kvarts",
+  "hero_s4_desc": "The largest glass manufacturer in Central Asia since 1975.",
   "hero_cta_more": "Learn more",
   "sec_stats_title": "Kvarts in numbers",
   "sec_stats_sub": "Plant production capacity",

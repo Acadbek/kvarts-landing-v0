@@ -1,5 +1,6 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
+  "brand_mark": "KVARTS AJ",
   "nav_factory": "Zavod",
   "nav_products": "Mahsulotlar",
   "nav_investors": "Aksiyadorlar va investorlar uchun",
@@ -39,7 +40,9 @@
   "hero_s2_desc": "Yangi liniya Respublika ravnaqi uchun xizmat qiladi!",
   "hero_s3_title": "Korxona rivojlanish strategiyasi",
   "hero_s3_desc": "Ishlab chiqarish modernizatsiyasi, yangi quvvatlar va barqaror o‘sish.",
-  "hero_cta_more": "Batafsil",
+  "hero_s4_title": "O‘zbekistonda yetakchi shisha zavodi «KVARTS» AJ",
+  "hero_s4_desc": "1975 yildan buyon Markaziy Osiyodagi eng yirik shisha ishlab chiqaruvchi.",
+  "hero_cta_more": "Learn more",
   "sec_stats_title": "Raqamlarda «Kvarts»",
   "sec_stats_sub": "Korxonaning ishlab chiqarish quvvati",
   "stat_fire_u": "ming dona",

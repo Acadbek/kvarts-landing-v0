@@ -1,8 +1,72 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
+
+/* SF Pro Display — public/fonts (woff2, font-display: swap) */
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/SFPRODISPLAYREGULAR.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/SFPRODISPLAYMEDIUM.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/SFPRODISPLAYBOLD.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/SFPRODISPLAYULTRALIGHTITALIC.woff2') format('woff2');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/SFPRODISPLAYTHINITALIC.woff2') format('woff2');
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/SFPRODISPLAYLIGHTITALIC.woff2') format('woff2');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/SFPRODISPLAYSEMIBOLDITALIC.woff2') format('woff2');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/SFPRODISPLAYHEAVYITALIC.woff2') format('woff2');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/SFPRODISPLAYBLACKITALIC.woff2') format('woff2');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
 
 @custom-variant dark (&:is(.dark *));
 @custom-variant data-popup-open (&[data-popup-open]);
@@ -112,8 +176,8 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'SF Pro Display', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'SF Pro Display', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
   --font-heading: var(--font-sans);
   --color-destructive: var(--destructive);
@@ -169,80 +233,33 @@
   }
 }
 
-/* Hero slideshow crossfade (functional, not decorative) */
-.hero-background {
-  opacity: 0;
-  transition: opacity 0s 800ms;
-}
-
-.hero-background[data-active='true'] {
-  z-index: 1;
-  opacity: 1;
-  transition: opacity 800ms cubic-bezier(0.77, 0, 0.175, 1);
-}
-
-/* Sekin zoom (Ken Burns) — infinite alternate.
-   Rasm 1 → 1.08 zoom bo'lib, xuddi o'sha tezlikda orqaga qaytadi
-   va to'xtovsiz davom etadi. Animatsiya data-active'ga bog'liq emas,
-   shuning uchun slayd almashganda "sakrash" bo'lmaydi — ko'rinuvchanlik
-   faqat opacity crossfade bilan boshqariladi. */
+/* Hero carousel — sekin zoom (Ken Burns), infinite alternate.
+   Faqat FAOL slayd rasmi animatsiyalanadi: 5 ta fullscreen qatlamni
+   bir vaqtda GPU'da harakatlantirish eng katta resurs yeyuvchi edi.
+   Slayd harakati Embla'da, shuning uchun "sakrash" bo'lmaydi. */
 @keyframes hero-zoom {
   from {
-    transform: scale(1);
+    transform: scale(1.02);
   }
   to {
     transform: scale(1.08);
   }
 }
 
-.hero-background img {
+.hero-slide-img {
+  transform: scale(1.02);
   transform-origin: center;
+}
+
+.hero-slide-img[data-active='true'] {
   will-change: transform;
   animation: hero-zoom 7s ease-in-out infinite alternate;
 }
 
-.hero-copy {
-  grid-area: 1 / 1;
-  align-self: center;
-  opacity: 0;
-  transform: translateY(-8px);
-  pointer-events: none;
-  transition: opacity 180ms cubic-bezier(0.23, 1, 0.32, 1),
-    transform 180ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.hero-copy[data-active='true'] {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-  transition-duration: 500ms;
-  transition-delay: 200ms;
-}
-
-.hero-description[data-active='true'] {
-  transition-delay: 250ms;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .hero-copy,
-  .hero-copy[data-active='true'] {
-    transform: none;
-    transition: opacity 150ms;
-  }
-
-  .hero-background {
-    transition: opacity 0s 150ms;
-  }
-
-  .hero-background[data-active='true'] {
-    transition: opacity 150ms;
-  }
-
-  .hero-background img,
-  .hero-background[data-active='true'] img {
+  .hero-slide-img {
     animation: none;
     transform: none;
-    transition: none;
   }
 }
 

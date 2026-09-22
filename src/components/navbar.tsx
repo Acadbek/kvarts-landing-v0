@@ -1,11 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ComponentType } from 'react'
-import { Check, ChevronDown, ChevronRight, Factory, Menu, Newspaper, Package, Phone, Tag, Users, X } from 'lucide-react'
+import { Check, ChevronDown, ChevronRight, Menu, X } from 'lucide-react'
 import {
   Bell as BellGlass,
+  BoxArchive as BoxArchiveGlass,
   ClipboardCheck as ClipboardCheckGlass,
   Files as FilesGlass,
   Folders as FoldersGlass,
+  House as HouseGlass,
+  MoneyBill as MoneyBillGlass,
+  Msgs as MsgsGlass,
+  PaperPlane as PaperPlaneGlass,
   Sitemap as SitemapGlass,
   SquareChartLine as SquareChartLineGlass,
   Suitcase as SuitcaseGlass,
@@ -63,7 +68,7 @@ function LanguageMenu({ locale, onSwitch }: { locale: Locale; onSwitch: (code: L
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger
         aria-label={m.lang_label({}, { locale })}
-        className="inline-flex h-9 shrink-0 items-center gap-1 rounded-full border border-white/15 bg-white/10 px-3 text-sm font-medium text-white transition-colors duration-300 hover:border-white/60"
+        className="inline-flex h-9 shrink-0 items-center gap-1 rounded-full border border-white/15 bg-white/10 px-3 text-[15px] font-medium text-white transition-colors duration-300 hover:border-white/60"
       >
         <span className="leading-none whitespace-nowrap">{current.label}</span>
         <ChevronDown size={14} className="shrink-0 self-center opacity-60" />
@@ -77,8 +82,8 @@ function LanguageMenu({ locale, onSwitch }: { locale: Locale; onSwitch: (code: L
               onClick={() => onSwitch(l.code)}
               className={
                 l.code === locale
-                  ? 'cursor-pointer bg-black/[0.06] font-semibold text-neutral-900 hover:bg-black/[0.1] focus:bg-black/[0.1]'
-                  : 'cursor-pointer text-neutral-600 hover:bg-black/[0.05] hover:text-neutral-900 focus:bg-black/[0.05] focus:text-neutral-900'
+                  ? 'cursor-pointer bg-black/[0.06] text-[15px] font-semibold tracking-[0.05em] text-neutral-900 hover:bg-black/[0.1] focus:bg-black/[0.1]'
+                  : 'cursor-pointer text-[15px] tracking-[0.05em] text-neutral-600 hover:bg-black/[0.05] hover:text-neutral-900 focus:bg-black/[0.05] focus:text-neutral-900'
               }
             >
               <span className="flex-1">{l.label}</span>
@@ -202,33 +207,6 @@ export function navGlassStyle(liquid: boolean): React.CSSProperties {
       }
 }
 
-/** Nucleo glass-icons uslubidagi shisha ikonka-plitka: yarim shaffof oq
-    gradient + ichki highlight + yumshoq soya, o'rtada Lucide glif.
-    Ochiq muz-shisha dropdown'lar bilan bir oiladan. */
-function GlassIcon({
-  icon: Icon,
-  iconSize = 16,
-  className = 'h-9 w-9 rounded-[10px]',
-}: {
-  icon: typeof FileText
-  iconSize?: number
-  className?: string
-}) {
-  return (
-    <span
-      aria-hidden="true"
-      className={`grid shrink-0 place-items-center text-neutral-700 ring-1 ring-white/70 ring-inset backdrop-blur-md transition-transform duration-150 group-hover:scale-105 ${className}`}
-      style={{
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.35))',
-        boxShadow:
-          'inset 0 1px 1px rgba(255,255,255,0.9), inset 0 -1px 2px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.12)',
-      }}
-    >
-      <Icon size={iconSize} strokeWidth={2} />
-    </span>
-  )
-}
-
 function InvestorsMenu({ locale }: { locale: Locale }) {
   // Click-only: hover sababli ochilishni e'tiborsiz qoldiramiz (controlled value).
   // Yopilish: trigger'ga qayta click, outside click, Escape yoki link click.
@@ -246,7 +224,7 @@ function InvestorsMenu({ locale }: { locale: Locale }) {
       <NavigationMenuList>
         <NavigationMenuItem value="investors">
           <NavigationMenuTrigger
-            className="h-auto items-center gap-1.5 whitespace-nowrap rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-semibold text-white transition-colors duration-300 hover:border-white/60 focus:bg-white/20 data-popup-open:bg-white/20"
+            className="h-auto items-center gap-1.5 whitespace-nowrap rounded-full border border-white/15 bg-white/10 px-3 py-2 text-[15px] font-semibold text-white transition-colors duration-300 hover:border-white/60 focus:bg-white/20 data-popup-open:bg-white/20"
           >
             {m.nav_investors({}, { locale })}
             <ChevronDown size={14} className="shrink-0 self-center opacity-60" />
@@ -274,7 +252,7 @@ function InvestorsMenu({ locale }: { locale: Locale }) {
   )
 }
 
-function InvestorListItem({ icon: Icon, title, desc, href }: { icon: ComponentType<{ size?: number | string; className?: string }>; title: string; desc: string; href: string }) {
+function InvestorListItem({ icon: Icon, title, desc, href }: { icon: ComponentType<{ size?: number | string; className?: string; stopColor1?: string; stopColor2?: string }>; title: string; desc: string; href: string }) {
   return (
     <li>
       <NavigationMenuLink
@@ -284,11 +262,11 @@ function InvestorListItem({ icon: Icon, title, desc, href }: { icon: ComponentTy
         rel="noreferrer"
         className="group flex items-center gap-3 rounded-xl px-2.5 py-2.5 outline-none transition-colors duration-150 hover:bg-black/[0.06] focus-visible:bg-black/[0.06]"
       >
-        {/* Asl Nucleo glass SVG — o'zining shisha foni bilan keladi, qo'shimcha plitka kerak emas */}
-        <Icon size={24} className="h-6 w-6 shrink-0 drop-shadow-sm" />
+        {/* Asl Nucleo glass SVG — qora gradient primary gradientga moslandi */}
+        <Icon size={24} stopColor1="#62A7FA" stopColor2="#00408A" className="h-6 w-6 shrink-0 drop-shadow-sm" />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[13px] font-semibold tracking-[-0.01em] text-neutral-900">{title}</span>
-          <span className="mt-px block truncate text-xs text-neutral-500">{desc}</span>
+          <span className="block truncate text-sm font-semibold tracking-[0.02em] text-neutral-900">{title}</span>
+          <span className="mt-px block truncate text-[13px] text-neutral-600">{desc}</span>
         </span>
         <ChevronRight
           size={15}
@@ -361,8 +339,14 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
 
       <div className="mx-auto flex w-full max-w-6xl flex-col items-stretch">
         <div ref={pillRef} className="flex h-16 w-full items-center justify-between gap-1 rounded-full py-1.5 pr-3.5 pl-2.5" style={pillStyle}>
-          <a href={home("#hero")} className="flex shrink-0 items-center" aria-label="Kvarts AJ">
+          <a href={home("#hero")} className="flex shrink-0 items-center gap-1.5" aria-label="Kvarts AJ">
             <img src="/logo.png" alt="Kvarts AJ" width={44} height={44} className="h-11 w-11 rounded-full object-cover" />
+            <span
+              className="text-[28px] font-bold leading-none tracking-wide whitespace-nowrap text-primary"
+              style={{ WebkitTextStroke: '0.7px white' }}
+            >
+              {m.brand_mark({}, { locale })}
+            </span>
           </a>
 
           <nav className="hidden flex-1 items-center justify-center gap-3 lg:flex" aria-label="Asosiy">
@@ -370,7 +354,7 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
               <a
                 key={l.href}
                 href={home(l.href)}
-                className="whitespace-nowrap rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition-colors duration-300 hover:border-white/60"
+                className="whitespace-nowrap rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[15px] font-semibold text-white transition-colors duration-300 hover:border-white/60"
               >
                 {l.text({}, { locale })}
               </a>
@@ -380,14 +364,16 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
               <a
                 key={l.href}
                 href={home(l.href)}
-                className="whitespace-nowrap rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition-colors duration-300 hover:border-white/60"
+                className="whitespace-nowrap rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[15px] font-semibold text-white transition-colors duration-300 hover:border-white/60"
               >
                 {l.text({}, { locale })}
               </a>
             ))}
           </nav>
 
-          <LanguageMenu locale={locale} onSwitch={changeLocale} />
+          <div className="hidden lg:block">
+            <LanguageMenu locale={locale} onSwitch={changeLocale} />
+          </div>
 
           <button
             className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-neutral-300 transition active:scale-95 hover:bg-white/10 hover:text-white lg:hidden"
@@ -413,23 +399,23 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
               aria-label="Mobil"
             >
               {LINKS.slice(0, 2).map((l, i) => {
-                const Icon = [Package, Factory][i]
+                const Icon = [BoxArchiveGlass, HouseGlass][i]
                 return (
                   <a
                     key={l.href}
                     href={home(l.href)}
                     onClick={() => setMenu(false)}
-                    className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-[15px] font-semibold text-neutral-100 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10"
+                    className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-base font-semibold text-neutral-100 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10"
                   >
-                    <GlassIcon icon={Icon} iconSize={19} className="h-10 w-10 rounded-xl" />
+                    <Icon size={32} stopColor1="#62A7FA" stopColor2="#00408A" className="h-8 w-8 shrink-0 drop-shadow-sm" />
                     <span className="flex-1">{l.text({}, { locale })}</span>
                     <ChevronRight size={16} className="shrink-0 text-neutral-500" />
                   </a>
                 )
               })}
               <details className="group">
-                <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl px-3 py-2.5 text-[15px] font-semibold text-neutral-100 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10 [&::-webkit-details-marker]:hidden">
-                  <GlassIcon icon={Users} iconSize={19} className="h-10 w-10 rounded-xl" />
+                <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl px-3 py-2.5 text-base font-semibold text-neutral-100 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10 [&::-webkit-details-marker]:hidden">
+                  <UsersGlass size={32} stopColor1="#62A7FA" stopColor2="#00408A" className="h-8 w-8 shrink-0 drop-shadow-sm" />
                   <span className="flex-1">{m.nav_investors({}, { locale })}</span>
                   <ChevronDown size={16} className="shrink-0 text-neutral-500 transition-transform group-open:rotate-180" />
                 </summary>
@@ -441,7 +427,7 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
                       target="_blank"
                       rel="noreferrer"
                       onClick={() => setMenu(false)}
-                      className="block rounded-xl px-3 py-2.5 text-sm text-neutral-300 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10 hover:text-white"
+                      className="block rounded-xl px-3 py-2.5 text-[15px] text-neutral-300 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10 hover:text-white"
                     >
                       {l.title({}, { locale })}
                     </a>
@@ -449,15 +435,15 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
                 </div>
               </details>
               {LINKS.slice(2).map((l, i) => {
-                const Icon = [Tag, Newspaper][i]
+                const Icon = [MoneyBillGlass, MsgsGlass][i]
                 return (
                   <a
                     key={l.href}
                     href={home(l.href)}
                     onClick={() => setMenu(false)}
-                    className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-[15px] font-semibold text-neutral-100 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10"
+                    className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-base font-semibold text-neutral-100 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10"
                   >
-                    <GlassIcon icon={Icon} iconSize={19} className="h-10 w-10 rounded-xl" />
+                    <Icon size={32} stopColor1="#62A7FA" stopColor2="#00408A" className="h-8 w-8 shrink-0 drop-shadow-sm" />
                     <span className="flex-1">{l.text({}, { locale })}</span>
                     <ChevronRight size={16} className="shrink-0 text-neutral-500" />
                   </a>
@@ -466,9 +452,9 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
               <a
                 href={home("#aloqa")}
                 onClick={() => setMenu(false)}
-                className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-[15px] font-semibold text-neutral-100 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10"
+                className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-base font-semibold text-neutral-100 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10"
               >
-                <GlassIcon icon={Phone} iconSize={19} className="h-10 w-10 rounded-xl" />
+                <PaperPlaneGlass size={32} stopColor1="#62A7FA" stopColor2="#00408A" className="h-8 w-8 shrink-0 drop-shadow-sm" />
                 <span className="flex-1">{m.nav_contacts({}, { locale })}</span>
                 <ChevronRight size={16} className="shrink-0 text-neutral-500" />
               </a>
