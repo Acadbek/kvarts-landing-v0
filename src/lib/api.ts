@@ -25,15 +25,27 @@ export function backendAssetUrl(path: string): string {
   return `${API_ORIGIN}${path.startsWith('/') ? '' : '/'}${path}`
 }
 
+/** GET + JSON parse. Muvaffaqiyatsiz bo'lsa 1 marta qayta uriniladi
+ * (server uyg'onish/tezlik muammolari uchun). */
+async function fetchJsonOnce(url: string, attempt: number): Promise<unknown> {
+  const res = await fetch(url, {
+    signal: AbortSignal.timeout(5000),
+    cache: 'no-store',
+    headers: { accept: 'application/json' },
+  })
+  if (!res.ok) {
+    if (attempt < 1) {
+      await new Promise((r) => setTimeout(r, 500))
+      return fetchJsonOnce(url, attempt + 1)
+    }
+    throw new Error(`HTTP ${res.status}`)
+  }
+  return res.json()
+}
+
 async function fetchPublicSettingsOnce(): Promise<Record<string, string> | null> {
   try {
-    const res = await fetch(`${API_URL}/public/settings`, {
-      signal: AbortSignal.timeout(5000),
-      cache: 'no-store',
-      headers: { accept: 'application/json' },
-    })
-    if (!res.ok) return null
-    const body = (await res.json()) as unknown
+    const body = (await fetchJsonOnce(`${API_URL}/public/settings`, 0)) as unknown
     const data =
       body && typeof body === 'object' && 'data' in body
         ? (body as { data: unknown }).data
@@ -56,13 +68,10 @@ export const fetchPublicSettings = createServerFn({ method: 'GET' }).handler(
 )
 
 async function fetchDocsLang(lang: Locale): Promise<RawFactDoc[]> {
-  const res = await fetch(`${API_URL}/public/documents?limit=100&lang=${lang}`, {
-    signal: AbortSignal.timeout(5000),
-    cache: 'no-store',
-    headers: { accept: 'application/json' },
-  })
-  if (!res.ok) throw new Error(`documents?lang=${lang}: HTTP ${res.status}`)
-  const body = (await res.json()) as unknown
+  const body = (await fetchJsonOnce(
+    `${API_URL}/public/documents?limit=100&lang=${lang}`,
+    0,
+  )) as unknown
   const data =
     body && typeof body === 'object' && 'data' in body
       ? (body as { data: unknown }).data

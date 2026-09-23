@@ -30,16 +30,36 @@ function DocRowLine({ doc, locale }: { doc: DocRow; locale: Locale }) {
 }
 
 /** Investor hujjat sahifalari (Muhim faktlar, Hisobotlar...) uchun
- * universal table: icon → title → sana. Bo'sh bo'lsa placeholder + docs. */
+ * universal table: icon → title → sana.
+ * `failed` — API'dan ma'lumot umuman kelmagan (placeholder bilan adashtirmaslik uchun). */
 export function DocumentTable({
   docs,
   locale,
   docsHref,
+  failed = false,
 }: {
   docs: DocRow[]
   locale: Locale
   docsHref: string
+  failed?: boolean
 }) {
+  if (failed) {
+    return (
+      <div className="mt-10 rounded-2xl border border-black/10 bg-neutral-50 p-6 sm:p-8">
+        <p className="max-w-xl text-[15px] leading-relaxed text-neutral-600">
+          {m.docs_load_error({}, { locale })}
+        </p>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-700"
+        >
+          {m.docs_reload({}, { locale })}
+        </button>
+      </div>
+    )
+  }
+
   if (docs.length === 0) {
     return (
       <div className="mt-10 rounded-2xl border border-black/10 bg-neutral-50 p-6 sm:p-8">

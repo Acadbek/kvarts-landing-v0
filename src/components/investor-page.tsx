@@ -41,7 +41,7 @@ export function InvestorPage({
   id: string
   eyebrow: string
   title: string
-  desc: string
+  desc?: string
   docsHref: string
   children?: React.ReactNode | ((locale: Locale) => React.ReactNode)
 }) {
@@ -71,9 +71,11 @@ export function InvestorPage({
         <h1 className="mt-3 max-w-2xl text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.02em] text-neutral-900 sm:text-5xl">
           {title}
         </h1>
-        <p className="mt-4 max-w-xl text-pretty text-base leading-7 text-neutral-600">
-          {desc}
-        </p>
+        {desc && (
+          <p className="mt-4 max-w-xl text-pretty text-base leading-7 text-neutral-600">
+            {desc}
+          </p>
+        )}
 
         {typeof children === 'function' ? (
           children(locale)

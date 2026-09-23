@@ -33,7 +33,7 @@ function ResolutionsPage() {
       desc={m.inv_resolutions_d({}, { locale })}
       docsHref={DOCS_HREF}
     >
-      {(loc) => <DocumentTable docs={docs[loc]} locale={loc} docsHref={DOCS_HREF} />}
+      {(loc) => <DocumentTable docs={docs[loc]} locale={loc} docsHref={DOCS_HREF} failed={!data} />}
     </InvestorPage>
   )
 }

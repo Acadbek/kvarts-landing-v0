@@ -209,5 +209,7 @@
   "aff_col_basis": "Основание аффилированности",
   "aff_col_ordinary": "Обыкновенные",
   "aff_col_preferred": "Привилегированные",
-  "aff_col_percent": "Доля, %"
+  "aff_col_percent": "Доля, %",
+  "docs_load_error": "Не удалось загрузить данные (нет связи с сервером).",
+  "docs_reload": "Обновить"
 }

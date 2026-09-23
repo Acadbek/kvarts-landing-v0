@@ -176,5 +176,7 @@
   "aff_col_basis": "Ground for affiliation",
   "aff_col_ordinary": "Ordinary",
   "aff_col_preferred": "Preferred",
-  "aff_col_percent": "Share, %"
+  "aff_col_percent": "Share, %",
+  "docs_load_error": "Failed to load data (server unreachable).",
+  "docs_reload": "Reload"
 }
