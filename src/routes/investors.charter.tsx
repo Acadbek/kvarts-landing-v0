@@ -7,7 +7,6 @@ import { CharterContent } from '../components/charter-content'
 import { mapCharter } from '../lib/charter'
 import { fetchPublicSettings } from '../lib/api'
 
-const DOCS_HREF = 'https://docs.kvarts.uz/index.php?subcat=6'
 
 export const Route = createFileRoute('/investors/charter')({
   component: CharterPage,
@@ -19,18 +18,18 @@ export const Route = createFileRoute('/investors/charter')({
 })
 
 function CharterPage() {
-  const [locale] = useInvestorLocale()
+  const [locale, changeLocale] = useInvestorLocale()
   const settings = Route.useLoaderData()
   const charter = useMemo(() => mapCharter(settings), [settings])
   return (
     <InvestorPage
+      locale={locale}
+      changeLocale={changeLocale}
       id="charter"
       eyebrow={m.inv_grp_corp({}, { locale })}
       title={m.inv_charter({}, { locale })}
-      desc={m.inv_charter_d({}, { locale })}
-      docsHref={DOCS_HREF}
     >
-      {(loc) => <CharterContent charter={charter} locale={loc} docsHref={DOCS_HREF} />}
+      {(loc) => <CharterContent charter={charter} locale={loc} />}
     </InvestorPage>
   )
 }

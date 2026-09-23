@@ -7,7 +7,6 @@ import { DocumentTable } from '../components/document-table'
 import { mapDocs } from '../lib/documents'
 import { fetchInvestorDocs } from '../lib/api'
 
-const DOCS_HREF = 'https://docs.kvarts.uz/index.php?subcat=6'
 
 export const Route = createFileRoute('/investors/corpdocs')({
   component: CorpDocsPage,
@@ -15,7 +14,7 @@ export const Route = createFileRoute('/investors/corpdocs')({
 })
 
 function CorpDocsPage() {
-  const [locale] = useInvestorLocale()
+  const [locale, changeLocale] = useInvestorLocale()
   const data = Route.useLoaderData()
   const docs = useMemo(
     () => ({
@@ -27,13 +26,13 @@ function CorpDocsPage() {
   )
   return (
     <InvestorPage
+      locale={locale}
+      changeLocale={changeLocale}
       id="corpdocs"
       eyebrow={m.inv_grp_corp({}, { locale })}
       title={m.inv_corpdocs({}, { locale })}
-      desc={m.inv_corpdocs_d({}, { locale })}
-      docsHref={DOCS_HREF}
     >
-      {(loc) => <DocumentTable docs={docs[loc]} locale={loc} docsHref={DOCS_HREF} failed={!data} />}
+      {(loc) => <DocumentTable docs={docs[loc]} locale={loc} failed={!data} />}
     </InvestorPage>
   )
 }

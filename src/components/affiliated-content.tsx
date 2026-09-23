@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { ArrowUpRight } from 'lucide-react'
 
 import * as m from '../paraglide/messages.js'
 import type { Locale } from '../paraglide/runtime.js'
@@ -31,12 +30,10 @@ function Cell({ row }: { row: AffiliatedRow }) {
 export function AffiliatedContent({
   lists,
   locale,
-  docsHref,
   failed = false,
 }: {
   lists: AffiliatedList[]
   locale: Locale
-  docsHref: string
   failed?: boolean
 }) {
   const [active, setActive] = useState(0)
@@ -65,15 +62,6 @@ export function AffiliatedContent({
         <p className="max-w-xl text-[15px] leading-relaxed text-neutral-600">
           {m.inv_page_body({}, { locale })}
         </p>
-        <a
-          href={docsHref}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-700"
-        >
-          {m.inv_page_docs({}, { locale })}
-          <ArrowUpRight size={15} />
-        </a>
       </div>
     )
   }

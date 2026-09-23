@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { ArrowUpRight } from 'lucide-react'
 import { getRouteApi } from '@tanstack/react-router'
 
 import * as m from '../paraglide/messages.js'
@@ -35,18 +34,19 @@ export function InvestorPage({
   eyebrow,
   title,
   desc,
-  docsHref,
+  locale,
+  changeLocale,
   children,
 }: {
   id: string
   eyebrow: string
   title: string
   desc?: string
-  docsHref: string
+  /** Yagona til holati — route'dan keladi (til almashtirish instant bo'lishi uchun). */
+  locale: Locale
+  changeLocale: (code: Locale) => void
   children?: React.ReactNode | ((locale: Locale) => React.ReactNode)
 }) {
-  const [locale, changeLocale] = useInvestorLocale()
-
   useEffect(() => {
     document.documentElement.lang = locale
   }, [locale])
@@ -68,7 +68,7 @@ export function InvestorPage({
 
       <main id={id} className="mx-auto max-w-6xl scroll-mt-24 px-5 pt-28 pb-16 sm:pt-36 sm:pb-24">
         <p className="text-sm font-semibold text-neutral-500">{eyebrow}</p>
-        <h1 className="mt-3 max-w-2xl text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.02em] text-neutral-900 sm:text-5xl">
+        <h1 className="mt-3 whitespace-nowrap text-[clamp(1.25rem,5.5vw,3rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-neutral-900">
           {title}
         </h1>
         {desc && (
@@ -85,15 +85,6 @@ export function InvestorPage({
               <p className="max-w-xl text-[15px] leading-relaxed text-neutral-600">
                 {m.inv_page_body({}, { locale })}
               </p>
-              <a
-                href={docsHref}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-700"
-              >
-                {m.inv_page_docs({}, { locale })}
-                <ArrowUpRight size={15} />
-              </a>
             </div>
           )
         )}

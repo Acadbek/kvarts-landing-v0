@@ -1,4 +1,5 @@
 import type { Locale } from '../paraglide/runtime.js'
+import { formatDate } from './charter'
 
 export type LocalizedText = Record<Locale, string>
 
@@ -91,13 +92,7 @@ export const NEWS: NewsItem[] = [
   },
 ]
 
+/** "2026-09-14" → "September 14, 2026" (oy nomi tilga qarab) — formatDate bilan bir xil. */
 export function formatNewsDate(iso: string, locale: Locale): string {
-  const [y, m, d] = iso.split('-').map(Number)
-  const months: Record<Locale, string[]> = {
-    uz: ['yan', 'fev', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avg', 'sen', 'okt', 'noy', 'dek'],
-    ru: ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'],
-    en: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-  }
-  if (locale === 'en') return `${months.en[m - 1]} ${d}, ${y}`
-  return `${d} ${months[locale][m - 1]}, ${y}`
+  return formatDate(iso, locale)
 }

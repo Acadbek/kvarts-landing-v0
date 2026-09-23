@@ -1,4 +1,3 @@
-import { ArrowUpRight } from 'lucide-react'
 import { File as FileGlass } from 'nucleo-glass-icons/react'
 
 import * as m from '../paraglide/messages.js'
@@ -35,12 +34,10 @@ function DocRowLine({ doc, locale }: { doc: DocRow; locale: Locale }) {
 export function DocumentTable({
   docs,
   locale,
-  docsHref,
   failed = false,
 }: {
   docs: DocRow[]
   locale: Locale
-  docsHref: string
   failed?: boolean
 }) {
   if (failed) {
@@ -66,15 +63,6 @@ export function DocumentTable({
         <p className="max-w-xl text-[15px] leading-relaxed text-neutral-600">
           {m.inv_page_body({}, { locale })}
         </p>
-        <a
-          href={docsHref}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-700"
-        >
-          {m.inv_page_docs({}, { locale })}
-          <ArrowUpRight size={15} />
-        </a>
       </div>
     )
   }
@@ -86,15 +74,6 @@ export function DocumentTable({
           <DocRowLine key={doc.id} doc={doc} locale={locale} />
         ))}
       </div>
-      <a
-        href={docsHref}
-        target="_blank"
-        rel="noreferrer"
-        className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-900 underline-offset-4 hover:underline"
-      >
-        {m.inv_page_docs({}, { locale })}
-        <ArrowUpRight size={15} />
-      </a>
     </div>
   )
 }

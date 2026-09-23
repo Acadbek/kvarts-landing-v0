@@ -99,16 +99,19 @@ export function formatNumber(raw: string): string {
   return raw.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 }
 
-/** "2015-04-03" → uz/ru: "03.04.2015", en: "April 3, 2015". */
+/** Oy nomlari — tilga qarab (Month DD, YYYY ko'rinishi uchun). */
+const MONTHS: Record<Locale, string[]> = {
+  uz: ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'],
+  ru: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+  en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+}
+
+/** "2026-09-14" → "September 14, 2026" (oy nomi tilga qarab). */
 export function formatDate(iso: string, locale: Locale): string {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso)
   if (!match) return iso
   const [, y, m, d] = match
-  if (locale === 'en') {
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    return `${months[Number(m) - 1]} ${Number(d)}, ${y}`
-  }
-  return `${d}.${m}.${y}`
+  return `${MONTHS[locale][Number(m) - 1]} ${Number(d)}, ${y}`
 }
 
 /** Kvoorum: son bo'lsa vergul bilan + %, bo'lmasa matn ko'rinishida. */

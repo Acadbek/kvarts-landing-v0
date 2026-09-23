@@ -7,7 +7,6 @@ import { AffiliatedContent } from '../components/affiliated-content'
 import { mapAffiliated } from '../lib/affiliated'
 import { fetchPublicSettings } from '../lib/api'
 
-const DOCS_HREF = 'https://docs.kvarts.uz/index.php?subcat=1'
 
 export const Route = createFileRoute('/investors/affiliated')({
   component: AffiliatedPage,
@@ -17,21 +16,21 @@ export const Route = createFileRoute('/investors/affiliated')({
 })
 
 function AffiliatedPage() {
-  const [locale] = useInvestorLocale()
+  const [locale, changeLocale] = useInvestorLocale()
   const settings = Route.useLoaderData()
   const lists = useMemo(() => mapAffiliated(settings), [settings])
   return (
     <InvestorPage
+      locale={locale}
+      changeLocale={changeLocale}
       id="affiliated"
       eyebrow={m.inv_grp_disc({}, { locale })}
       title={m.inv_affiliated({}, { locale })}
-      docsHref={DOCS_HREF}
     >
       {(loc) => (
         <AffiliatedContent
           lists={lists}
           locale={loc}
-          docsHref={DOCS_HREF}
           failed={!settings}
         />
       )}

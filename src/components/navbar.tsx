@@ -286,7 +286,7 @@ function InvestorListItem({ icon: Icon, title, desc, href, external, onNavigate 
       {/* Asl Nucleo glass SVG — qora gradient primary gradientga moslandi */}
       <Icon size={24} stopColor1="#62A7FA" stopColor2="#00408A" className="h-6 w-6 shrink-0 drop-shadow-sm" />
       <span className="min-w-0 flex-1">
-        <span className="block text-sm font-semibold leading-snug tracking-[0.02em] text-neutral-900">{title}</span>
+        <span className="block truncate text-sm font-semibold leading-snug tracking-[0.02em] text-neutral-900">{title}</span>
         <span title={desc} className="mt-px block truncate text-[13px] text-neutral-600">{desc}</span>
       </span>
       <ChevronRight
