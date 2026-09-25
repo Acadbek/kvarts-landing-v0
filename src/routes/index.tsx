@@ -9,7 +9,7 @@ import { getClientLocale, switchLocale } from '../lib/locale'
 import { NEWS, formatNewsDate } from '../lib/news.js'
 import { CATALOGS } from '../lib/catalog'
 import { LINKS, LiquidGlassNav, NavAnchor, glassStyle, useLiquidSupported } from '../components/navbar'
-import { SlidingNumber } from '../components/sliding-number'
+import { InfiniteSlider } from '../components/ui/infinite-slider'
 import { Splide, SplideSlide } from '@splidejs/react-splide'
 import '@splidejs/react-splide/css/core'
 
@@ -129,7 +129,7 @@ function money(n: number): string {
   return `${grp(n)},${(n % 1).toFixed(2).slice(2)}`
 }
 
-function StatCell({ locale, value, decimals, unit, label, first = false }: { locale: Locale; value: number; decimals: number; unit: string; label: string; first?: boolean }) {
+function StatCell({ locale, value, decimals, unit, label }: { locale: Locale; value: number; decimals: number; unit: string; label: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const [run, setRun] = useState(false)
   useEffect(() => {
@@ -152,19 +152,19 @@ function StatCell({ locale, value, decimals, unit, label, first = false }: { loc
     return () => io.disconnect()
   }, [])
   const v = useCountUp(value, run)
-  const display = Number(v.toFixed(decimals))
+  // 1402.21 → "1 402,21" (uz/ru) / "1,402.21" (en)
+  const [intPart, decPart] = v.toFixed(decimals).split('.')
+  const display =
+    decimals > 0
+      ? `${grp(Number(intPart))}${locale === 'en' ? '.' : ','}${decPart}`
+      : grp(Number(intPart))
   return (
-    <div ref={ref} className="group relative px-1 py-8 sm:px-6 sm:py-10">
-      {/* ustun ajratgich — faqat kontent balandligida (padding'ni kesib o'tmaydi) */}
-      {!first && (
-        <span aria-hidden="true" className="absolute bottom-8 left-0 top-8 hidden w-px bg-black/10 sm:bottom-10 sm:top-10 xl:block" />
-      )}
-      <span aria-hidden="true" className="absolute left-1 top-0 h-[2px] w-10 bg-primary transition-all duration-500 group-hover:w-16 sm:left-6" />
-      <div className="text-[2.5rem] font-medium leading-none tracking-[-0.02em] tabular-nums text-neutral-900 md:text-5xl xl:text-[3.25rem]">
-        <SlidingNumber value={display} decimalSeparator={locale === 'en' ? '.' : ','} />
+    <div ref={ref} className="glass rounded-[24px] p-5 sm:p-6">
+      <div className="text-[2rem] font-medium leading-none tracking-[-0.02em] tabular-nums text-neutral-900 sm:text-4xl">
+        {display}
       </div>
-      <p className="mt-3 text-sm font-semibold text-neutral-500">{unit}</p>
-      <p className="mt-1 max-w-[16rem] text-sm leading-relaxed text-neutral-500">{label}</p>
+      <p className="mt-2.5 text-sm font-semibold text-neutral-500">{unit}</p>
+      <p className="mt-1 text-sm leading-relaxed text-neutral-500">{label}</p>
     </div>
   )
 }
@@ -212,14 +212,14 @@ function QuickLinks({ locale }: { locale: Locale }) {
     },
   ]
   return (
-    <section className="relative z-10 border-b border-black/10 bg-white">
+    <section className="bg-ios relative z-10">
       <div className="mx-auto grid max-w-6xl gap-4 px-5 py-10 sm:grid-cols-3 sm:py-12">
         {cards.map((c, i) => (
           <Reveal key={c.href} delay={i * 90}>
             <a
               href={c.href}
               {...(c.external ? { target: '_blank', rel: 'noreferrer' } : {})}
-              className="group flex h-full flex-col rounded-2xl border border-black/10 bg-white p-6 shadow-[0_1px_2px_rgb(0_0_0/0.05)] transition-colors duration-200 hover:border-primary"
+              className="glass group flex h-full flex-col rounded-[26px] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_50px_rgb(0_0_0/0.14)]"
             >
               <c.icon size={40} stopColor1="#62A7FA" stopColor2="#00408A" className="h-10 w-10 shrink-0 drop-shadow-sm" />
               <span className="mt-4 block text-lg font-bold tracking-tight text-neutral-900">{c.title}</span>
@@ -244,7 +244,7 @@ function StatsSection({ locale }: { locale: Locale }) {
     { value: 30, decimals: 0, unit: m.stat_glass_u({}, { locale }), label: m.stat_glass_l({}, { locale }) },
   ]
   return (
-    <section id="zavod" className="relative scroll-mt-24 overflow-hidden border-t border-black/10 bg-white">
+    <section id="zavod" className="bg-ios relative scroll-mt-24 overflow-hidden border-t border-black/5">
       {/* fon: yengil primary glow + yupqa grid */}
       <div aria-hidden="true" className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(65%_55%_at_50%_0%,rgb(0_111_220/0.10),transparent_70%)]" />
@@ -256,9 +256,9 @@ function StatsSection({ locale }: { locale: Locale }) {
             {m.sec_stats_title({}, { locale })}
           </h2>
         </Reveal>
-        <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-2 sm:mt-10 xl:grid-cols-4">
-          {stats.map((s, idx) => (
-            <StatCell key={s.label} locale={locale} value={s.value} decimals={s.decimals} unit={s.unit} label={s.label} first={idx === 0} />
+        <div className="mt-6 grid grid-cols-2 gap-4 sm:mt-10 xl:grid-cols-4">
+          {stats.map((s) => (
+            <StatCell key={s.label} locale={locale} value={s.value} decimals={s.decimals} unit={s.unit} label={s.label} />
           ))}
         </div>
       </div>
@@ -274,7 +274,7 @@ function AboutSection({ locale }: { locale: Locale }) {
     { icon: Banknote, title: m.fact_profit_t({}, { locale }), desc: m.fact_profit_d({}, { locale }) },
   ]
   return (
-    <section className="relative scroll-mt-24 border-t border-black/10 bg-white">
+    <section className="bg-ios relative scroll-mt-24 border-t border-black/5">
       <div className="relative mx-auto max-w-6xl px-5 py-16 sm:py-24">
         <SectionHead
           eyebrow={locale === 'ru' ? 'О предприятии' : locale === 'en' ? 'About the plant' : 'Korxona haqida'}
@@ -287,13 +287,13 @@ function AboutSection({ locale }: { locale: Locale }) {
                 : '1975 yildan buyon Markaziy Osiyodagi eng yirik shisha ishlab chiqaruvchi.'
           }
         />
-        <dl className="mt-10 border-t border-black/10">
+        <dl className="glass mt-10 overflow-hidden rounded-[28px]">
           {facts.map((f) => (
             <div
               key={f.title}
-              className="grid grid-cols-[auto_1fr] items-start gap-4 border-b border-black/10 py-6 sm:items-center sm:gap-8 sm:px-4"
+              className="grid grid-cols-[auto_1fr] items-start gap-4 border-b border-black/[0.06] px-5 py-6 last:border-b-0 sm:items-center sm:gap-8 sm:px-7"
             >
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-neutral-950 text-white">
+              <span className="ios-blue grid h-11 w-11 shrink-0 place-items-center rounded-2xl text-white">
                 <f.icon size={20} />
               </span>
               <span className="min-w-0">
@@ -310,17 +310,17 @@ function AboutSection({ locale }: { locale: Locale }) {
 
 
 function CatalogSection({ locale }: { locale: Locale }) {  return (
-    <section id="mahsulotlar" className="relative scroll-mt-24 border-t border-black/10 bg-white">
+    <section id="mahsulotlar" className="bg-ios relative scroll-mt-24 border-t border-black/5">
       <div className="mx-auto max-w-6xl px-5 py-16 sm:py-24">
         <SectionHead eyebrow={m.nav_products({}, { locale })} title={m.sec_cat_title({}, { locale })} sub={m.sec_cat_sub({}, { locale })} />
-        <div className="mt-12 border-t border-black/10">
+        <div className="glass mt-12 overflow-hidden rounded-[28px]">
           {CATALOGS.map((c, i) => (
             <a
               key={c.file}
               href={c.file}
               target="_blank"
               rel="noreferrer"
-              className="group grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-black/10 py-6 transition-colors hover:bg-neutral-50 sm:gap-8 sm:px-4"
+              className="group grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-black/[0.06] px-4 py-6 transition-colors last:border-b-0 hover:bg-white/60 sm:gap-8 sm:px-6"
             >
                 <span
                   aria-hidden="true"
@@ -395,7 +395,7 @@ function ServicesSection({ locale }: { locale: Locale }) {
               type="button"
               onClick={() => goTo(active - 1)}
               aria-label={locale === 'ru' ? 'Предыдущий' : locale === 'en' ? 'Previous' : 'Oldingi'}
-              className="grid h-11 w-11 cursor-pointer place-items-center rounded-full border border-white/15 text-white transition active:scale-95 hover:border-white/60"
+              className="glass-dark grid h-11 w-11 cursor-pointer place-items-center rounded-full text-white transition active:scale-95 hover:border-white/50"
             >
               <ChevronLeft size={18} />
             </button>
@@ -406,7 +406,7 @@ function ServicesSection({ locale }: { locale: Locale }) {
               type="button"
               onClick={() => goTo(active + 1)}
               aria-label={locale === 'ru' ? 'Следующий' : locale === 'en' ? 'Next' : 'Keyingi'}
-              className="grid h-11 w-11 cursor-pointer place-items-center rounded-full border border-white/15 text-white transition active:scale-95 hover:border-white/60"
+              className="glass-dark grid h-11 w-11 cursor-pointer place-items-center rounded-full text-white transition active:scale-95 hover:border-white/50"
             >
               <ChevronRight size={18} />
             </button>
@@ -426,7 +426,7 @@ function ServicesSection({ locale }: { locale: Locale }) {
               aria-label={`${i + 1} / ${total}`}
               className="grid w-full flex-none snap-start items-center gap-6 md:grid-cols-2 md:gap-12"
             >
-              <div className="overflow-hidden rounded-2xl border border-white/10">
+              <div className="glass-dark overflow-hidden rounded-[24px]">
                 <img
                   src={s.img}
                   alt=""
@@ -504,9 +504,9 @@ function CertsSection({ locale }: { locale: Locale }) {
           </div>
         </Reveal>
         <Reveal delay={80}>
-          <ul className="mt-10 border-t border-white/10">
+          <ul className="glass-dark mt-10 overflow-hidden rounded-[28px]">
             {CERT_DOCS.map((d) => (
-              <li key={d.file} className="border-b border-white/10 transition-colors hover:bg-white/[0.03]">
+              <li key={d.file} className="border-b border-white/10 transition-colors last:border-b-0 hover:bg-white/[0.06]">
                 <a
                   href={`/certs/${d.file}`}
                   target="_blank"
@@ -542,9 +542,40 @@ const HISTORY = [
 ] as const
 
 function HistorySection({ locale }: { locale: Locale }) {
-  const cards = [...HISTORY, ...HISTORY]
+  const cards = HISTORY.map((h) => (
+    <article
+      key={h.img}
+      className="glass w-[280px] flex-none overflow-hidden rounded-[24px] sm:w-[340px]"
+    >
+      <div className="overflow-hidden">
+        <img
+          src={h.img}
+          alt=""
+          loading="lazy"
+          className="aspect-[3/2] w-full object-cover"
+        />
+      </div>
+      <div className="p-5">
+        <p className="font-mono text-sm font-semibold tabular-nums text-neutral-400">{h.year}</p>
+        <p className="mt-2 text-base font-bold leading-snug tracking-tight text-neutral-900">
+          {h.title({}, { locale })}
+        </p>
+        <p className="mt-2 line-clamp-4 text-sm leading-relaxed text-neutral-600">{h.desc({}, { locale })}</p>
+      </div>
+    </article>
+  ))
   const wrapRef = useRef<HTMLDivElement>(null)
   const [running, setRunning] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia === 'undefined') return
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setReducedMotion(mq.matches)
+    const onChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches)
+    mq.addEventListener?.('change', onChange)
+    return () => mq.removeEventListener?.('change', onChange)
+  }, [])
 
   // Slider faqat ekranga yaqinlashganda yuradi (400px qolganda start),
   // ko'rinmay qolganda to'xtaydi — keraksiz animatsiya yo'q.
@@ -563,36 +594,30 @@ function HistorySection({ locale }: { locale: Locale }) {
     return () => io.disconnect()
   }, [])
   return (
-    <section id="tarix" aria-label={m.sec_hist_title({}, { locale })} className="relative scroll-mt-24 overflow-hidden border-t border-black/10 bg-neutral-50">
+    <section id="tarix" aria-label={m.sec_hist_title({}, { locale })} className="bg-ios relative scroll-mt-24 overflow-hidden border-t border-black/5">
       <div className="relative mx-auto max-w-6xl px-5 pt-16 sm:pt-24">
         <SectionHead eyebrow={m.nav_history({}, { locale })} title={m.sec_hist_title({}, { locale })} sub={m.sec_hist_sub({}, { locale })} />
       </div>
       <div ref={wrapRef} className="relative mt-12 pb-16 sm:pb-24">
-        <div className={`anim-history-track flex w-max gap-4 pr-4 motion-reduce:animate-none motion-reduce:overflow-x-auto motion-reduce:px-5${running ? ' is-running' : ''}`}>
-          {cards.map((h, i) => (
-            <article
-              key={`${h.img}#${i}`}
-              aria-hidden={i >= HISTORY.length}
-              className="w-[280px] flex-none overflow-hidden rounded-2xl border border-black/10 bg-white sm:w-[340px]"
-            >
-              <div className="overflow-hidden">
-                <img
-                  src={h.img}
-                  alt=""
-                  loading="lazy"
-                  className="aspect-[3/2] w-full object-cover"
-                />
-              </div>
-              <div className="p-5">
-                <p className="font-mono text-sm font-semibold tabular-nums text-neutral-400">{h.year}</p>
-                <p className="mt-2 text-base font-bold leading-snug tracking-tight text-neutral-900">
-                  {h.title({}, { locale })}
-                </p>
-                <p className="mt-2 line-clamp-4 text-sm leading-relaxed text-neutral-600">{h.desc({}, { locale })}</p>
-              </div>
-            </article>
-          ))}
-        </div>
+        {running && !reducedMotion ? (
+          <div className="relative">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 left-0 z-10 w-20 bg-gradient-to-r from-white to-transparent"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-20 bg-gradient-to-l from-white to-transparent"
+            />
+            <InfiniteSlider gap={16} speed={60} speedOnHover={15} className="py-8 -my-8">
+              {cards}
+            </InfiniteSlider>
+          </div>
+        ) : (
+          <div className="flex gap-4 overflow-x-auto px-5">
+            {cards}
+          </div>
+        )}
       </div>
     </section>
   )
@@ -604,20 +629,20 @@ function PriceSection({ locale }: { locale: Locale }) {
   const novatShort = locale === 'ru' ? 'Без НДС' : locale === 'en' ? 'Excl. VAT' : 'QQS siz'
   const perUnit = locale === 'ru' ? 'сум / 1000 шт' : locale === 'en' ? 'UZS / 1000 pcs' : 'so‘m / 1000 dona'
   return (
-    <section id="narxlar" className="relative scroll-mt-24 border-t border-black/10 bg-neutral-50">
+    <section id="narxlar" className="bg-ios relative scroll-mt-24 border-t border-black/5">
       <div className="mx-auto max-w-6xl px-5 py-16 sm:py-24">
         <SectionHead eyebrow={m.nav_prices({}, { locale })} title={m.sec_price_title({}, { locale })} sub={m.sec_price_sub({}, { locale })} />
-        <p className="mx-auto mt-6 w-fit rounded-full bg-neutral-900 px-4 py-1.5 text-xs font-semibold text-white">
+        <p className="ios-blue mx-auto mt-6 w-fit rounded-full px-4 py-1.5 text-xs font-semibold text-white">
           {m.price_note({}, { locale })}
         </p>
         <p className="mt-6 text-right text-xs tabular-nums text-neutral-400">
           {vatShort} · {novatShort} — {perUnit}
         </p>
-        <div className="mt-3">
+        <div className="glass mt-3 overflow-hidden rounded-[28px] px-4 sm:px-6">
           {PRICE_ROWS.map(([vol, vat, novat]) => (
             <div
               key={vol}
-              className="flex items-baseline gap-3 border-t border-black/10 py-5 whitespace-nowrap last:border-b sm:gap-6 sm:px-2"
+              className="flex items-baseline gap-3 border-b border-black/[0.06] py-5 whitespace-nowrap last:border-b-0 sm:gap-6"
             >
               <p className="text-base font-bold tracking-tight tabular-nums text-neutral-900 sm:text-xl">
                 {grp(vol)} <span className="text-xs font-semibold text-neutral-400 sm:text-sm">sm³</span>
@@ -654,7 +679,7 @@ function PriceSection({ locale }: { locale: Locale }) {
 
 function NewsSection({ locale }: { locale: Locale }) {
   return (
-    <section id="yangiliklar" className="relative scroll-mt-24 border-t border-black/10 bg-white">
+    <section id="yangiliklar" className="bg-ios relative scroll-mt-24 border-t border-black/5">
       <div className="mx-auto max-w-6xl px-5 py-16 sm:py-24">
         <SectionHead eyebrow={m.nav_news({}, { locale })} title={m.sec_news_title({}, { locale })} sub={m.sec_news_sub({}, { locale })} />
         {NEWS.length === 0 ? (
@@ -668,7 +693,7 @@ function NewsSection({ locale }: { locale: Locale }) {
                   href={n.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="group grid overflow-hidden rounded-2xl border border-black/10 bg-neutral-50 transition-colors hover:border-black/25 md:grid-cols-2"
+                  className="glass group grid overflow-hidden rounded-[28px] transition duration-300 hover:shadow-[0_18px_50px_rgb(0_0_0/0.14)] md:grid-cols-2"
                 >
                   <div className="overflow-hidden">
                     <img
@@ -680,7 +705,7 @@ function NewsSection({ locale }: { locale: Locale }) {
                   </div>
                   <div className="flex flex-col justify-center p-6 sm:p-10">
                     <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500">
-                      <span className="rounded-full bg-neutral-900 px-2.5 py-1 font-semibold text-white">
+                      <span className="ios-blue rounded-full px-2.5 py-1 font-semibold text-white">
                         {n.category[locale]}
                       </span>
                       <span className="inline-flex items-center gap-1.5">
@@ -704,7 +729,7 @@ function NewsSection({ locale }: { locale: Locale }) {
                   href={n.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="group grid grid-cols-[1fr_auto] items-center gap-4 border-b border-black/10 py-5 transition-colors first:border-t hover:bg-neutral-50 sm:gap-6 sm:px-4"
+                  className="group grid grid-cols-[1fr_auto] items-center gap-4 border-b border-black/10 py-5 transition-colors last:border-b-0 first:border-t hover:bg-white/60 sm:gap-6 sm:px-4"
                 >
                   <span className="min-w-0">
                     <span className="flex flex-wrap items-center gap-2 text-xs text-neutral-500">
@@ -732,22 +757,39 @@ function NewsSection({ locale }: { locale: Locale }) {
 }
 
 function Partners({ locale }: { locale: Locale }) {
-  const logos = [...PARTNER_LOGOS, ...PARTNER_LOGOS]
   return (
-    <section aria-label="Hamkorlar" className="overflow-hidden border-t border-black/10 bg-white py-14">
+    <section aria-label="Hamkorlar" className="bg-ios relative overflow-hidden border-t border-black/5 py-14">
       <p className="mb-10 text-center text-sm font-semibold text-neutral-500">
         {locale === 'ru' ? 'Нам доверяют' : locale === 'en' ? 'Trusted by partners' : 'Hamkorlarimiz'}
       </p>
-      <div className="anim-marquee flex w-max items-center gap-14 pr-14 motion-reduce:animate-none">
-        {logos.map((l, i) => (
-          <img
-            key={`${l.src}-${i}`}
-            src={l.src}
-            alt={l.alt}
-            loading="lazy"
-            className="h-10 w-auto shrink-0 object-contain opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0"
-          />
-        ))}
+      {/* chekka fade (iOS) */}
+      <div className="relative">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-white to-transparent"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-white to-transparent"
+        />
+        <InfiniteSlider gap={16} speed={50} speedOnHover={12} className="py-8 -my-8">
+          {PARTNER_LOGOS.map((l) => (
+            <div
+              key={l.src}
+              className="glass flex h-[140px] w-[300px] shrink-0 items-center justify-center rounded-[28px] px-6"
+              style={{ boxShadow: '0 18px 40px -14px rgb(10 60 140 / 0.28), inset 0 1px 0 rgb(255 255 255 / 0.6)' }}
+            >
+              <img
+                src={l.src}
+                alt={l.alt}
+                loading="eager"
+                decoding="async"
+                draggable={false}
+                className={`h-auto w-auto object-contain ${l.cls}`}
+              />
+            </div>
+          ))}
+        </InfiniteSlider>
       </div>
     </section>
   )
@@ -812,11 +854,11 @@ function ContactFooter({ locale }: { locale: Locale }) {
 }
 
 const PARTNER_LOGOS = [
-  { src: '/partner1.png', alt: 'Partner 1' },
-  { src: '/partner2.png', alt: 'Partner 2' },
-  { src: '/partner3.png', alt: 'Partner 3' },
-  { src: '/partner4.png', alt: 'Partner 4' },
-  { src: '/partner5.png', alt: 'Partner 5' },
+  { src: '/partner1.png', alt: 'GM', cls: 'max-h-[88px] max-w-[96px]' },
+  { src: '/partner2.png', alt: 'AVTOOYNA', cls: 'max-h-[36px] max-w-[220px]' },
+  { src: '/partner3.png', alt: 'Алмалыкский ГМ', cls: 'max-h-[72px] max-w-[240px]' },
+  { src: '/partner4.png', alt: 'artel', cls: 'max-h-[88px] max-w-[250px]' },
+  { src: '/partner5.png', alt: 'imzo', cls: 'max-h-[88px] max-w-[250px]' },
 ]
 
 const HERO_SLIDES = [
@@ -1078,7 +1120,7 @@ function VercelHero() {
         className="fixed inset-x-3 z-40 lg:hidden"
         style={{ bottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
       >
-        <div className="mx-auto flex max-w-md items-center gap-2 rounded-[26px] border border-white/10 bg-neutral-950 p-2 shadow-2xl select-none">
+        <div className="glass-dark mx-auto flex max-w-md items-center gap-2 rounded-[26px] p-2 shadow-2xl select-none">
           <a
             href="tel:+998733724434"
             className="flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-white/10 text-sm font-bold text-white transition active:scale-[0.98]"

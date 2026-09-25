@@ -12,7 +12,7 @@ function DocRowLine({ doc, locale }: { doc: DocRow; locale: Locale }) {
       href={backendAssetUrl(doc.href)}
       target="_blank"
       rel="noreferrer"
-      className="-mx-2 flex items-center gap-3 rounded-lg border-b border-black/[0.06] px-2 py-3.5 last:border-b-0 hover:bg-neutral-50"
+      className="-mx-2 flex items-center gap-3 rounded-2xl border-b border-black/[0.06] px-2 py-3.5 last:border-b-0 hover:bg-white/60"
     >
       <FileGlass
         size={20}
@@ -42,14 +42,14 @@ export function DocumentTable({
 }) {
   if (failed) {
     return (
-      <div className="mt-10 rounded-2xl border border-black/10 bg-neutral-50 p-6 sm:p-8">
+      <div className="glass mt-10 rounded-[28px] p-6 sm:p-8">
         <p className="max-w-xl text-[15px] leading-relaxed text-neutral-600">
           {m.docs_load_error({}, { locale })}
         </p>
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-700"
+          className="ios-blue mt-5 inline-flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-semibold text-white transition active:scale-[0.98]"
         >
           {m.docs_reload({}, { locale })}
         </button>
@@ -59,7 +59,7 @@ export function DocumentTable({
 
   if (docs.length === 0) {
     return (
-      <div className="mt-10 rounded-2xl border border-black/10 bg-neutral-50 p-6 sm:p-8">
+      <div className="glass mt-10 rounded-[28px] p-6 sm:p-8">
         <p className="max-w-xl text-[15px] leading-relaxed text-neutral-600">
           {m.inv_page_body({}, { locale })}
         </p>
@@ -68,12 +68,10 @@ export function DocumentTable({
   }
 
   return (
-    <div className="mt-10">
-      <div>
-        {docs.map((doc) => (
-          <DocRowLine key={doc.id} doc={doc} locale={locale} />
-        ))}
-      </div>
+    <div className="glass mt-10 rounded-[28px] p-2 sm:p-4">
+      {docs.map((doc) => (
+        <DocRowLine key={doc.id} doc={doc} locale={locale} />
+      ))}
     </div>
   )
 }

@@ -15,7 +15,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-0.5 border-b border-black/[0.06] py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8">
+    <div className="flex flex-col gap-0.5 border-b border-black/[0.06] py-3.5 last:border-b-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8">
       <dt className="text-[15px] text-neutral-500">{label}</dt>
       <dd className="text-[15px] font-medium text-neutral-900 sm:text-right">{value}</dd>
     </div>
@@ -48,7 +48,7 @@ export function CharterContent({
       </div>
 
       {/* aksiyalar polosasi */}
-      <dl className="mt-9 grid grid-cols-2 gap-x-6 gap-y-7 border-y border-black/[0.06] py-6 sm:grid-cols-4 sm:divide-x sm:divide-black/[0.06]">
+      <dl className="glass mt-9 grid grid-cols-2 gap-x-6 gap-y-7 rounded-[28px] px-6 py-7 sm:grid-cols-4 sm:divide-x sm:divide-black/[0.06]">
         <Stat label={m.chr_shares_total({}, { locale })} value={formatNumber(charter.sharesTotal)} />
         <Stat label={m.chr_shares_ordinary({}, { locale })} value={formatNumber(charter.sharesOrdinary)} />
         <Stat label={m.chr_shares_preferred({}, { locale })} value={formatNumber(charter.sharesPreferred)} />
@@ -60,7 +60,7 @@ export function CharterContent({
         <h2 className="text-xl font-semibold tracking-[-0.01em] text-neutral-900">
           {m.chr_meeting({}, { locale })}
         </h2>
-        <dl className="mt-4 border-t border-black/[0.06]">
+        <dl className="glass mt-4 rounded-[28px] px-5 sm:px-7">
           <Row label={m.chr_meeting_form({}, { locale })} value={charter.meetingForm[locale]} />
           <Row label={m.chr_meeting_date({}, { locale })} value={formatDate(charter.meetingDate, locale)} />
           <Row label={m.chr_protocol_date({}, { locale })} value={formatDate(charter.protocolDate, locale)} />

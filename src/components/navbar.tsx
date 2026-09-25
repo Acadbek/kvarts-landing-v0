@@ -438,7 +438,7 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
             />
             <nav
               id="mobile-menu"
-              className="anim-sheet mt-2 overflow-hidden rounded-[28px] border border-white/10 bg-neutral-950 p-2 shadow-2xl overscroll-contain"
+              className="anim-sheet mt-2 overflow-hidden rounded-[28px] border border-white/15 bg-neutral-950/80 p-2 shadow-2xl overscroll-contain backdrop-blur-2xl"
               aria-label="Mobil"
             >
               {LINKS.slice(0, 2).map((l, i) => {

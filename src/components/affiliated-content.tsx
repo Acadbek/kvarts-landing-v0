@@ -2,7 +2,6 @@ import { useState } from 'react'
 
 import * as m from '../paraglide/messages.js'
 import type { Locale } from '../paraglide/runtime.js'
-import { formatDate } from '../lib/charter'
 import type { AffiliatedList, AffiliatedRow } from '../lib/affiliated'
 
 const COLS = [
@@ -12,6 +11,12 @@ const COLS = [
   { key: 'preferred' as const, label: (l: Locale) => m.aff_col_preferred({}, { locale: l }), narrow: true },
   { key: 'percent' as const, label: (l: Locale) => m.aff_col_percent({}, { locale: l }), narrow: true },
 ]
+
+/** Tab uchun ixcham sana (14.09.2026) — segmented control'da uzun oy nomi sig'maydi. */
+function tabDate(iso: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso)
+  return match ? `${match[3]}.${match[2]}.${match[1]}` : iso
+}
 
 function Cell({ row }: { row: AffiliatedRow }) {
   return (
@@ -41,14 +46,14 @@ export function AffiliatedContent({
 
   if (failed) {
     return (
-      <div className="mt-10 rounded-2xl border border-black/10 bg-neutral-50 p-6 sm:p-8">
+      <div className="glass mt-10 rounded-[28px] p-6 sm:p-8">
         <p className="max-w-xl text-[15px] leading-relaxed text-neutral-600">
           {m.docs_load_error({}, { locale })}
         </p>
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-700"
+          className="ios-blue mt-5 inline-flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-semibold text-white transition active:scale-[0.98]"
         >
           {m.docs_reload({}, { locale })}
         </button>
@@ -58,7 +63,7 @@ export function AffiliatedContent({
 
   if (lists.length === 0) {
     return (
-      <div className="mt-10 rounded-2xl border border-black/10 bg-neutral-50 p-6 sm:p-8">
+      <div className="glass mt-10 rounded-[28px] p-6 sm:p-8">
         <p className="max-w-xl text-[15px] leading-relaxed text-neutral-600">
           {m.inv_page_body({}, { locale })}
         </p>
@@ -68,27 +73,27 @@ export function AffiliatedContent({
 
   return (
     <div className="mt-16 sm:mt-20">
-      {/* sana tab'lari — editorial underline */}
-      <div className="flex flex-wrap gap-x-12 gap-y-1 border-b border-black/[0.06]">
+      {/* sana tab'lari — iOS segmented control */}
+      <div className="glass inline-flex max-w-full flex-wrap gap-1 rounded-full p-1">
         {lists.map((list, i) => (
           <button
             key={list.date}
             type="button"
             onClick={() => setActive(i)}
             className={
-              '-mb-px border-b-2 pb-2.5 text-[15px] tabular-nums transition-colors ' +
+              'rounded-full px-4 py-2 text-[15px] tabular-nums transition ' +
               (i === active
-                ? 'border-neutral-900 text-neutral-900'
-                : 'border-transparent text-neutral-500 hover:text-neutral-800')
+                ? 'bg-neutral-900 text-white shadow-md'
+                : 'text-neutral-500 hover:text-neutral-900')
             }
           >
-            {formatDate(list.date, locale)}
+            {tabDate(list.date)}
           </button>
         ))}
       </div>
 
       {/* desktop jadval */}
-      <div className="mt-5 hidden sm:block">
+      <div className="glass mt-6 hidden rounded-[28px] px-5 sm:block">
         <table className="w-full text-left text-[15px]">
           <thead>
             <tr className="border-b border-black/[0.06] text-[15px] font-normal text-neutral-400">
@@ -107,7 +112,7 @@ export function AffiliatedContent({
           </thead>
           <tbody>
             {current.rows.map((row, i) => (
-              <tr key={i} className="border-b border-black/[0.06] transition-colors hover:bg-neutral-50">
+              <tr key={i} className="border-b border-black/[0.06] transition-colors last:border-b-0 hover:bg-white/60">
                 <Cell row={row} />
               </tr>
             ))}
@@ -116,9 +121,9 @@ export function AffiliatedContent({
       </div>
 
       {/* mobil bloklar */}
-      <div className="mt-2 sm:hidden">
+      <div className="glass mt-6 rounded-[28px] px-4 sm:hidden">
         {current.rows.map((row, i) => (
-          <div key={i} className="border-b border-black/[0.06] py-4">
+          <div key={i} className="border-b border-black/[0.06] py-4 last:border-b-0">
             <p className="text-[15px] font-medium text-neutral-900">{row.name}</p>
             <p className="mt-0.5 text-sm text-neutral-500">{row.basis}</p>
             <dl className="mt-2.5 grid grid-cols-3 gap-x-4">

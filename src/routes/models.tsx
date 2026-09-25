@@ -33,7 +33,7 @@ function ModelsPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white font-sans text-neutral-900">
+    <div className="bg-ios min-h-screen font-sans text-neutral-900">
       <a
         href="#models"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-black focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"

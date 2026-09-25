@@ -56,7 +56,7 @@ export function InvestorPage({
   }, [])
 
   return (
-    <div className="min-h-screen bg-white font-sans text-neutral-900">
+    <div className="bg-ios min-h-screen font-sans text-neutral-900">
       <a
         href={`#${id}`}
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-black focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
@@ -81,7 +81,7 @@ export function InvestorPage({
           children(locale)
         ) : (
           children ?? (
-            <div className="mt-10 rounded-2xl border border-black/10 bg-neutral-50 p-6 sm:p-8">
+            <div className="glass mt-10 rounded-[28px] p-6 sm:p-8">
               <p className="max-w-xl text-[15px] leading-relaxed text-neutral-600">
                 {m.inv_page_body({}, { locale })}
               </p>
