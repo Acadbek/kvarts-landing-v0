@@ -184,5 +184,17 @@
   "prod_no_products": "No products in this category yet.",
   "prod_open": "Details",
   "prod_back": "Products",
-  "prod_sum": "UZS"
+  "prod_sum": "UZS",
+  "nav_about": "About us",
+  "nav_projects": "Projects",
+  "inv_overview_d": "Corporate documents, reports and disclosures — all in one place.",
+  "ct_form_t": "Send a request",
+  "ct_name": "Name",
+  "ct_phone": "Phone",
+  "ct_email": "Email",
+  "ct_message": "Message",
+  "ct_send": "Send",
+  "ct_ok": "Request received!",
+  "ct_err": "Failed to send, please try again.",
+  "ct_address": "Address"
 }

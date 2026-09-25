@@ -197,3 +197,53 @@ async function fetchCategoryPageOnce(slug: string): Promise<CategoryPages | null
 export const fetchCategoryPage = createServerFn({ method: 'GET' })
   .validator(z.object({ slug: z.string().min(1).max(120) }))
   .handler(async ({ data }) => fetchCategoryPageOnce(data.slug))
+
+export interface AboutContent {
+  title: string
+  body: string
+}
+
+/** «Biz haqimizda» sahifasi (public/pages/about) — uch til parallel. */
+async function fetchAboutOnce(): Promise<Record<Locale, AboutContent | null> | null> {
+  const results = await Promise.all(
+    (['uz', 'ru', 'en'] as const).map(async (lang) => {
+      try {
+        const body = (await fetchJsonOnce(`${API_URL}/public/pages/about?lang=${lang}`, 0)) as unknown
+        const data =
+          body && typeof body === 'object' && 'data' in body
+            ? (body as { data: unknown }).data
+            : body
+        if (!data || typeof data !== 'object' || !('title' in data)) return null
+        const d = data as { title: unknown; body: unknown }
+        if (typeof d.title !== 'string') return null
+        return { title: d.title, body: typeof d.body === 'string' ? d.body : '' } as AboutContent
+      } catch {
+        return null
+      }
+    }),
+  )
+  if (results.every((r) => r === null)) return null
+  return { uz: results[0], ru: results[1], en: results[2] }
+}
+
+export const fetchAbout = createServerFn({ method: 'GET' }).handler(fetchAboutOnce)
+
+const LeadInput = z.object({
+  name: z.string().trim().min(2).max(100),
+  phone: z.string().trim().min(7).max(32),
+  email: z.string().trim().max(120).optional(),
+  message: z.string().trim().max(2000).optional(),
+})
+
+/** Kontakt forma → POST /public/leads (admin panelda ko'rinadi). */
+export const submitLead = createServerFn({ method: 'POST' })
+  .validator(LeadInput)
+  .handler(async ({ data }) => {
+    const res = await fetch(`${API_URL}/public/leads`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify({ ...data, source: 'contact' }),
+    })
+    if (!res.ok) throw new Error(`leads: HTTP ${res.status}`)
+    return { ok: true as const }
+  })

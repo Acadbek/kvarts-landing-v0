@@ -9,9 +9,7 @@ import {
   Files as FilesGlass,
   Folders as FoldersGlass,
   House as HouseGlass,
-  MoneyBill as MoneyBillGlass,
   Msgs as MsgsGlass,
-  PaperPlane as PaperPlaneGlass,
   Sitemap as SitemapGlass,
   SquareChartLine as SquareChartLineGlass,
   Suitcase as SuitcaseGlass,
@@ -44,7 +42,7 @@ export const LINKS = [
   { text: m.nav_news, href: '#yangiliklar' },
 ] as const
 
-const INVESTOR_LINKS = [
+export const INVESTOR_LINKS = [
   { icon: FilesGlass, title: m.inv_charter, desc: m.inv_charter_d, href: '/investors/charter', external: false },
   { icon: FoldersGlass, title: m.inv_corpdocs, desc: m.inv_corpdocs_d, href: '/investors/corpdocs', external: false },
   { icon: SitemapGlass, title: m.inv_structure, desc: m.inv_structure_d, href: '/investors/structure', external: false },
@@ -392,8 +390,11 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
             </span>
           </NavAnchor>
 
-          <nav className="hidden flex-1 items-center justify-center gap-3 lg:flex" aria-label="Asosiy">
-            {LINKS.slice(0, 2).map((l) => (
+          <nav className="hidden flex-1 items-center justify-center gap-3 xl:flex" aria-label="Asosiy">
+            {[
+              { href: '/about', text: m.nav_about },
+              { href: '/products', text: m.nav_products },
+            ].map((l) => (
               <NavAnchor
                 key={l.href}
                 href={home(l.href)}
@@ -403,7 +404,10 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
               </NavAnchor>
             ))}
             <InvestorsMenu locale={locale} />
-            {LINKS.slice(2).map((l) => (
+            {[
+              { href: '/projects', text: m.nav_projects },
+              { href: '/contacts', text: m.nav_contacts },
+            ].map((l) => (
               <NavAnchor
                 key={l.href}
                 href={home(l.href)}
@@ -414,12 +418,12 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
             ))}
           </nav>
 
-          <div className="hidden lg:block">
+          <div className="hidden xl:block">
             <LanguageMenu locale={locale} onSwitch={changeLocale} />
           </div>
 
           <button
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-neutral-300 transition active:scale-95 hover:bg-white/10 hover:text-white lg:hidden"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-neutral-300 transition active:scale-95 hover:bg-white/10 hover:text-white xl:hidden"
             onClick={() => setMenu(!menu)}
             aria-expanded={menu}
             aria-controls="mobile-menu"
@@ -434,15 +438,18 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
             <div
               aria-hidden="true"
               onClick={() => setMenu(false)}
-              className="fixed inset-0 -z-10 bg-black/60 lg:hidden"
+              className="fixed inset-0 -z-10 bg-black/60 xl:hidden"
             />
             <nav
               id="mobile-menu"
               className="anim-sheet mt-2 overflow-hidden rounded-[28px] border border-white/15 bg-neutral-950/80 p-2 shadow-2xl overscroll-contain backdrop-blur-2xl"
               aria-label="Mobil"
             >
-              {LINKS.slice(0, 2).map((l, i) => {
-                const Icon = [BoxArchiveGlass, HouseGlass][i]
+              {[
+                { href: '/about', icon: HouseGlass, text: m.nav_about },
+                { href: '/products', icon: BoxArchiveGlass, text: m.nav_products },
+              ].map((l) => {
+                const Icon = l.icon
                 return (
                   <NavAnchor
                     key={l.href}
@@ -488,8 +495,11 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
                   )}
                 </div>
               </details>
-              {LINKS.slice(2).map((l, i) => {
-                const Icon = [MoneyBillGlass, MsgsGlass][i]
+              {[
+                { href: '/projects', icon: SuitcaseGlass, text: m.nav_projects },
+                { href: '/contacts', icon: MsgsGlass, text: m.nav_contacts },
+              ].map((l) => {
+                const Icon = l.icon
                 return (
                   <NavAnchor
                     key={l.href}
@@ -503,15 +513,6 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
                   </NavAnchor>
                 )
               })}
-              <NavAnchor
-                href={home("#aloqa")}
-                onClick={() => setMenu(false)}
-                className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-base font-semibold text-neutral-100 transition active:scale-[0.98] active:bg-white/15 hover:bg-white/10"
-              >
-                <PaperPlaneGlass size={32} stopColor1="#62A7FA" stopColor2="#00408A" className="h-8 w-8 shrink-0 drop-shadow-sm" />
-                <span className="flex-1">{m.nav_contacts({}, { locale })}</span>
-                <ChevronRight size={16} className="shrink-0 text-neutral-500" />
-              </NavAnchor>
               <div className="mt-2 rounded-2xl bg-white/[0.07] p-1.5">
                 <div className="flex gap-1">
                   {LANGS.map((l) => {

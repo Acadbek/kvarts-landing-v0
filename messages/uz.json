@@ -217,5 +217,17 @@
   "prod_no_products": "Bu kategoriyada hozircha mahsulot yo'q.",
   "prod_open": "Batafsil",
   "prod_back": "Mahsulotlar",
-  "prod_sum": "so'm"
+  "prod_sum": "so'm",
+  "nav_about": "Biz haqimizda",
+  "nav_projects": "Loyihalar",
+  "inv_overview_d": "Korporativ hujjatlar, hisobotlar va oshkoralik — barchasi bir joyda.",
+  "ct_form_t": "Xabar qoldirish",
+  "ct_name": "Ism",
+  "ct_phone": "Telefon",
+  "ct_email": "Email",
+  "ct_message": "Xabar",
+  "ct_send": "Yuborish",
+  "ct_ok": "So'rovingiz qabul qilindi!",
+  "ct_err": "Yuborib bo'lmadi, qayta urinib ko'ring.",
+  "ct_address": "Manzil"
 }

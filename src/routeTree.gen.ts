@@ -10,7 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as ContactsRouteImport } from './routes/contacts'
 import { Route as ModelsRouteImport } from './routes/models'
+import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as InvestorsIndexRouteImport } from './routes/investors.index'
 import { Route as InvestorsAffiliatedRouteImport } from './routes/investors.affiliated'
 import { Route as InvestorsBizplanRouteImport } from './routes/investors.bizplan'
 import { Route as InvestorsCharterRouteImport } from './routes/investors.charter'
@@ -27,9 +31,29 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactsRoute = ContactsRouteImport.update({
+  id: '/contacts',
+  path: '/contacts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ModelsRoute = ModelsRouteImport.update({
   id: '/models',
   path: '/models',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsRoute = ProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvestorsIndexRoute = InvestorsIndexRouteImport.update({
+  id: '/investors/',
+  path: '/investors/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvestorsAffiliatedRoute = InvestorsAffiliatedRouteImport.update({
@@ -85,7 +109,10 @@ const ProductsSlugRoute = ProductsSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contacts': typeof ContactsRoute
   '/models': typeof ModelsRoute
+  '/projects': typeof ProjectsRoute
   '/investors/affiliated': typeof InvestorsAffiliatedRoute
   '/investors/bizplan': typeof InvestorsBizplanRoute
   '/investors/charter': typeof InvestorsCharterRoute
@@ -95,11 +122,15 @@ export interface FileRoutesByFullPath {
   '/investors/resolutions': typeof InvestorsResolutionsRoute
   '/investors/structure': typeof InvestorsStructureRoute
   '/products/$slug': typeof ProductsSlugRoute
+  '/investors/': typeof InvestorsIndexRoute
   '/products/': typeof ProductsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contacts': typeof ContactsRoute
   '/models': typeof ModelsRoute
+  '/projects': typeof ProjectsRoute
   '/investors/affiliated': typeof InvestorsAffiliatedRoute
   '/investors/bizplan': typeof InvestorsBizplanRoute
   '/investors/charter': typeof InvestorsCharterRoute
@@ -109,12 +140,16 @@ export interface FileRoutesByTo {
   '/investors/resolutions': typeof InvestorsResolutionsRoute
   '/investors/structure': typeof InvestorsStructureRoute
   '/products/$slug': typeof ProductsSlugRoute
+  '/investors': typeof InvestorsIndexRoute
   '/products': typeof ProductsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contacts': typeof ContactsRoute
   '/models': typeof ModelsRoute
+  '/projects': typeof ProjectsRoute
   '/investors/affiliated': typeof InvestorsAffiliatedRoute
   '/investors/bizplan': typeof InvestorsBizplanRoute
   '/investors/charter': typeof InvestorsCharterRoute
@@ -124,13 +159,17 @@ export interface FileRoutesById {
   '/investors/resolutions': typeof InvestorsResolutionsRoute
   '/investors/structure': typeof InvestorsStructureRoute
   '/products/$slug': typeof ProductsSlugRoute
+  '/investors/': typeof InvestorsIndexRoute
   '/products/': typeof ProductsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
+    | '/contacts'
     | '/models'
+    | '/projects'
     | '/investors/affiliated'
     | '/investors/bizplan'
     | '/investors/charter'
@@ -140,11 +179,15 @@ export interface FileRouteTypes {
     | '/investors/resolutions'
     | '/investors/structure'
     | '/products/$slug'
+    | '/investors/'
     | '/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
+    | '/contacts'
     | '/models'
+    | '/projects'
     | '/investors/affiliated'
     | '/investors/bizplan'
     | '/investors/charter'
@@ -154,11 +197,15 @@ export interface FileRouteTypes {
     | '/investors/resolutions'
     | '/investors/structure'
     | '/products/$slug'
+    | '/investors'
     | '/products'
   id:
     | '__root__'
     | '/'
+    | '/about'
+    | '/contacts'
     | '/models'
+    | '/projects'
     | '/investors/affiliated'
     | '/investors/bizplan'
     | '/investors/charter'
@@ -168,12 +215,16 @@ export interface FileRouteTypes {
     | '/investors/resolutions'
     | '/investors/structure'
     | '/products/$slug'
+    | '/investors/'
     | '/products/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  ContactsRoute: typeof ContactsRoute
   ModelsRoute: typeof ModelsRoute
+  ProjectsRoute: typeof ProjectsRoute
   InvestorsAffiliatedRoute: typeof InvestorsAffiliatedRoute
   InvestorsBizplanRoute: typeof InvestorsBizplanRoute
   InvestorsCharterRoute: typeof InvestorsCharterRoute
@@ -183,6 +234,7 @@ export interface RootRouteChildren {
   InvestorsResolutionsRoute: typeof InvestorsResolutionsRoute
   InvestorsStructureRoute: typeof InvestorsStructureRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
+  InvestorsIndexRoute: typeof InvestorsIndexRoute
   ProductsIndexRoute: typeof ProductsIndexRoute
 }
 
@@ -195,11 +247,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contacts': {
+      id: '/contacts'
+      path: '/contacts'
+      fullPath: '/contacts'
+      preLoaderRoute: typeof ContactsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/models': {
       id: '/models'
       path: '/models'
       fullPath: '/models'
       preLoaderRoute: typeof ModelsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects': {
+      id: '/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/investors/': {
+      id: '/investors/'
+      path: '/investors'
+      fullPath: '/investors/'
+      preLoaderRoute: typeof InvestorsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/investors/affiliated': {
@@ -277,7 +357,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  ContactsRoute: ContactsRoute,
   ModelsRoute: ModelsRoute,
+  ProjectsRoute: ProjectsRoute,
   InvestorsAffiliatedRoute: InvestorsAffiliatedRoute,
   InvestorsBizplanRoute: InvestorsBizplanRoute,
   InvestorsCharterRoute: InvestorsCharterRoute,
@@ -287,6 +370,7 @@ const rootRouteChildren: RootRouteChildren = {
   InvestorsResolutionsRoute: InvestorsResolutionsRoute,
   InvestorsStructureRoute: InvestorsStructureRoute,
   ProductsSlugRoute: ProductsSlugRoute,
+  InvestorsIndexRoute: InvestorsIndexRoute,
   ProductsIndexRoute: ProductsIndexRoute,
 }
 export const routeTree = rootRouteImport

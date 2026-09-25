@@ -61,16 +61,16 @@ function CategoryPage() {
               </div>
             )}
             {page.products.length === 0 ? (
-              <div className="glass mt-8 rounded-[28px] p-6 sm:p-8">
-                <p className="max-w-xl text-[15px] leading-relaxed text-neutral-600">
-                  {m.prod_no_products({}, { locale })}
-                </p>
-              </div>
-            ) : (
-              <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {page.products.map((p) => (
-                  <ProductCard key={p.id} product={p} locale={locale} />
-                ))}
+                <div className="glass mt-8 rounded-[28px] p-6 sm:p-8">
+                  <p className="max-w-xl text-[15px] leading-relaxed text-neutral-600">
+                    {m.prod_no_products({}, { locale })}
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {page.products.map((p) => (
+                    <ProductCard key={p.id} product={p} locale={locale} />
+                  ))}
               </div>
             )}
           </>
