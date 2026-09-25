@@ -54,8 +54,6 @@
   "stat_bottle_l": "Glass bottles",
   "stat_glass_u": "mln m²",
   "stat_glass_l": "Flat glass",
-  "fact_mono_t": "Monopolist",
-  "fact_mono_d": "Leading producer of construction glass on the domestic market",
   "fact_1995_t": "Incorporated in 1995",
   "fact_1995_d": "Producing polished flat glass since 1996",
   "fact_state_t": "89.78% — the state",
@@ -178,5 +176,13 @@
   "aff_col_preferred": "Preferred",
   "aff_col_percent": "Share, %",
   "docs_load_error": "Failed to load data (server unreachable).",
-  "docs_reload": "Reload"
+  "docs_reload": "Reload",
+  "prod_eyebrow": "Catalog",
+  "prod_title": "Products",
+  "prod_desc": "All factory products — sheet glass, jars and bottles.",
+  "prod_empty": "No categories yet.",
+  "prod_no_products": "No products in this category yet.",
+  "prod_open": "Details",
+  "prod_back": "Products",
+  "prod_sum": "UZS"
 }

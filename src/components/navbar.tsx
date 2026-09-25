@@ -38,7 +38,7 @@ import {
 } from './ui/navigation-menu'
 
 export const LINKS = [
-  { text: m.nav_products, href: '#mahsulotlar' },
+  { text: m.nav_products, href: '/products' },
   { text: m.nav_factory, href: '#zavod' },
   { text: m.nav_prices, href: '#narxlar' },
   { text: m.nav_news, href: '#yangiliklar' },

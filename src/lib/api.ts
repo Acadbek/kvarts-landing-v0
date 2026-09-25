@@ -7,9 +7,11 @@
  */
 
 import { createServerFn } from '@tanstack/react-start'
+import { z } from 'zod'
 
 import type { Locale } from '../paraglide/runtime.js'
 import type { InvestorDocs, RawFactDoc } from './documents'
+import type { CategoryPages, ShopCategories } from './shop'
 
 const API_URL = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/v1').replace(
   /\/+$/,
@@ -108,3 +110,90 @@ async function fetchInvestorDocsOnce(): Promise<Record<Locale, InvestorDocs> | n
 export const fetchInvestorDocs = createServerFn({ method: 'GET' }).handler(
   fetchInvestorDocsOnce,
 )
+
+async function fetchShopListOnce(path: string): Promise<unknown[]> {
+  const lists = await Promise.all(
+    (['uz', 'ru', 'en'] as const).map(async (lang) => {
+      const body = (await fetchJsonOnce(
+        `${API_URL}${path}?limit=100&lang=${lang}`,
+        0,
+      )) as unknown
+      const data =
+        body && typeof body === 'object' && 'data' in body
+          ? (body as { data: unknown }).data
+          : body
+      const items =
+        data && typeof data === 'object' && 'items' in data
+          ? (data as { items: unknown }).items
+          : null
+      if (!Array.isArray(items)) throw new Error(`no items: ${path}?lang=${lang}`)
+      return items
+    }),
+  )
+  return lists as unknown[]
+}
+
+/** Mahsulot kategoriyalari (public/categories) — uch til parallel. */
+async function fetchCategoriesOnce(): Promise<ShopCategories | null> {
+  try {
+    const [uz, ru, en] = (await fetchShopListOnce('/public/categories')) as [
+      ShopCategories['uz'],
+      ShopCategories['ru'],
+      ShopCategories['en'],
+    ]
+    return { uz, ru, en }
+  } catch {
+    return null
+  }
+}
+
+export const fetchCategories = createServerFn({ method: 'GET' }).handler(
+  fetchCategoriesOnce,
+)
+
+async function fetchCategoryDetail(
+  slug: string,
+  lang: Locale,
+): Promise<{ category: unknown; products: unknown[] } | null> {
+  const [catBody, prodBody] = await Promise.all([
+    fetchJsonOnce(
+      `${API_URL}/public/categories/${encodeURIComponent(slug)}?lang=${lang}`,
+      0,
+    ),
+    fetchJsonOnce(
+      `${API_URL}/public/products?limit=100&lang=${lang}&categorySlug=${encodeURIComponent(slug)}`,
+      0,
+    ),
+  ])
+  const unwrap = (body: unknown) =>
+    body && typeof body === 'object' && 'data' in body
+      ? (body as { data: unknown }).data
+      : body
+  const category = unwrap(catBody)
+  const prodData = unwrap(prodBody)
+  const products =
+    prodData && typeof prodData === 'object' && 'items' in prodData
+      ? (prodData as { items: unknown }).items
+      : null
+  if (!category || typeof category !== 'object' || !Array.isArray(products)) return null
+  return { category, products }
+}
+
+/** Kategoriya sahifasi: category + shu kategoriya mahsulotlari (uch til). */
+async function fetchCategoryPageOnce(slug: string): Promise<CategoryPages | null> {
+  const results = await Promise.all(
+    (['uz', 'ru', 'en'] as const).map((lang) =>
+      fetchCategoryDetail(slug, lang).catch(() => null),
+    ),
+  )
+  if (results.every((r) => r === null)) return null
+  return {
+    uz: results[0] as CategoryPages['uz'],
+    ru: results[1] as CategoryPages['ru'],
+    en: results[2] as CategoryPages['en'],
+  }
+}
+
+export const fetchCategoryPage = createServerFn({ method: 'GET' })
+  .validator(z.object({ slug: z.string().min(1).max(120) }))
+  .handler(async ({ data }) => fetchCategoryPageOnce(data.slug))

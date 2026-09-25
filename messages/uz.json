@@ -57,8 +57,6 @@
   "stat_bottle_l": "Shisha butilka",
   "stat_glass_u": "mln m²",
   "stat_glass_l": "Listovoy oyna",
-  "fact_mono_t": "Monopolist",
-  "fact_mono_d": "Ichki bozorda qurilish oynasi bo‘yicha yetakchi ishlab chiqaruvchi",
   "fact_1995_t": "1995 yildan — aksiyadorlik jamiyati",
   "fact_1995_d": "1996 yildan listovoy sayqallangan oyna ishlab chiqariladi",
   "fact_state_t": "89,78% — davlat",
@@ -211,5 +209,13 @@
   "aff_col_preferred": "Imtiyozli",
   "aff_col_percent": "Ulash, %",
   "docs_load_error": "Ma‘lumotni yuklab bo‘lmadi (server bilan aloqa uzilgan).",
-  "docs_reload": "Qayta yuklash"
+  "docs_reload": "Qayta yuklash",
+  "prod_eyebrow": "Katalog",
+  "prod_title": "Mahsulotlar",
+  "prod_desc": "Zavodda ishlab chiqariladigan barcha mahsulotlar — listovoy oyna, shisha banka va butilkalar.",
+  "prod_empty": "Hozircha kategoriyalar qo'shilmagan.",
+  "prod_no_products": "Bu kategoriyada hozircha mahsulot yo'q.",
+  "prod_open": "Batafsil",
+  "prod_back": "Mahsulotlar",
+  "prod_sum": "so'm"
 }

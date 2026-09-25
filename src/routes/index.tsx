@@ -1,6 +1,6 @@
 import { createFileRoute, getRouteApi } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
-import { ArrowRight, ArrowUpRight, Award, Banknote, CalendarDays, ChevronLeft, ChevronRight, Factory, Landmark, Mail, MapPin, Phone } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Award, Banknote, CalendarDays, ChevronLeft, ChevronRight, Landmark, Mail, MapPin, Phone } from 'lucide-react'
 import { Award as AwardGlass, BookOpen as BookOpenGlass, Files as FilesGlass } from 'nucleo-glass-icons/react'
 
 import * as m from '../paraglide/messages.js'
@@ -268,7 +268,6 @@ function StatsSection({ locale }: { locale: Locale }) {
 
 function AboutSection({ locale }: { locale: Locale }) {
   const facts = [
-    { icon: Factory, title: m.fact_mono_t({}, { locale }), desc: m.fact_mono_d({}, { locale }) },
     { icon: Award, title: m.fact_1995_t({}, { locale }), desc: m.fact_1995_d({}, { locale }) },
     { icon: Landmark, title: m.fact_state_t({}, { locale }), desc: m.fact_state_d({}, { locale }) },
     { icon: Banknote, title: m.fact_profit_t({}, { locale }), desc: m.fact_profit_d({}, { locale }) },
