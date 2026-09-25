@@ -83,14 +83,18 @@ export function NavAnchor({ href, children, ...props }: any) {
   )
 }
 
-function LanguageMenu({ locale, onSwitch }: { locale: Locale; onSwitch: (code: Locale) => void }) {
+function LanguageMenu({ locale, onSwitch, tone = 'dark' }: { locale: Locale; onSwitch: (code: Locale) => void; tone?: 'dark' | 'light' }) {
   const current = LANGS.find((l) => l.code === locale) ?? LANGS[0]
   const liquid = useLiquidSupported()
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger
         aria-label={m.lang_label({}, { locale })}
-        className="inline-flex h-9 shrink-0 items-center gap-1 rounded-full border border-white/15 bg-white/10 px-3 text-[15px] font-medium text-white transition-colors duration-300 hover:border-white/60"
+        className={
+          tone === 'light'
+            ? 'inline-flex h-9 shrink-0 items-center gap-1 rounded-full border border-white/60 bg-white/45 px-3 text-[15px] font-medium text-neutral-800 shadow-[0_1px_6px_rgb(15_40_80/0.05),inset_0_1px_0_rgb(255_255_255/0.5)] backdrop-blur-xl transition duration-300 hover:border-white/80 hover:bg-white/60'
+            : 'inline-flex h-9 shrink-0 items-center gap-1 rounded-full border border-white/15 bg-white/10 px-3 text-[15px] font-medium text-white transition-colors duration-300 hover:border-white/60'
+        }
       >
         <span className="leading-none whitespace-nowrap">{current.label}</span>
         <ChevronDown size={14} className="shrink-0 self-center opacity-60" />
@@ -229,7 +233,28 @@ export function navGlassStyle(liquid: boolean): React.CSSProperties {
       }
 }
 
-function InvestorsMenu({ locale }: { locale: Locale }) {
+/** Navbar pill'ning OCH glass yuzasi — oq fonli sahifalar uchun (home'dan boshqalar). */
+export function navGlassLightStyle(liquid: boolean): React.CSSProperties {
+  return liquid
+    ? {
+        background: 'rgb(255 255 255 / 0.6)',
+        backdropFilter: `url(#${FILTER_ID}) saturate(1.6) blur(1px)`,
+        WebkitBackdropFilter: `url(#${FILTER_ID}) saturate(1.6) blur(1px)`,
+        boxShadow:
+          'inset 0 1px 0 rgb(255 255 255 / 0.65), inset 0 0 0 1px rgb(255 255 255 / 0.35), 0 12px 32px -12px rgb(15 40 80 / 0.2)',
+        border: '1px solid rgb(255 255 255 / 0.55)',
+      }
+    : {
+        background: 'rgb(255 255 255 / 0.62)',
+        backdropFilter: 'blur(20px) saturate(1.8)',
+        WebkitBackdropFilter: 'blur(20px) saturate(1.8)',
+        boxShadow:
+          'inset 0 1px 0 rgb(255 255 255 / 0.65), inset 0 0 0 1px rgb(255 255 255 / 0.35), 0 12px 32px -12px rgb(15 40 80 / 0.2)',
+        border: '1px solid rgb(255 255 255 / 0.55)',
+      }
+}
+
+function InvestorsMenu({ locale, tone = 'dark' }: { locale: Locale; tone?: 'dark' | 'light' }) {
   // Click-only: hover sababli ochilishni e'tiborsiz qoldiramiz (controlled value).
   // Yopilish: trigger'ga qayta click, outside click, Escape yoki link click.
   const [value, setValue] = useState<string | null>(null)
@@ -246,7 +271,11 @@ function InvestorsMenu({ locale }: { locale: Locale }) {
       <NavigationMenuList>
         <NavigationMenuItem value="investors">
           <NavigationMenuTrigger
-            className="h-auto items-center gap-1.5 whitespace-nowrap rounded-full border border-white/15 bg-white/10 px-3 py-2 text-[15px] font-semibold text-white transition-colors duration-300 hover:border-white/60 focus:bg-white/20 data-popup-open:bg-white/20"
+            className={
+              tone === 'light'
+                ? 'h-auto items-center gap-1.5 whitespace-nowrap rounded-full border border-white/60 bg-white/45 px-3 py-2 text-[15px] font-semibold text-neutral-800 shadow-[0_1px_6px_rgb(15_40_80/0.05),inset_0_1px_0_rgb(255_255_255/0.5)] backdrop-blur-xl transition duration-300 hover:border-white/80 hover:bg-white/60 focus:bg-white/60 data-popup-open:bg-white/60'
+                : 'h-auto items-center gap-1.5 whitespace-nowrap rounded-full border border-white/15 bg-white/10 px-3 py-2 text-[15px] font-semibold text-white transition-colors duration-300 hover:border-white/60 focus:bg-white/20 data-popup-open:bg-white/20'
+            }
           >
             {m.nav_investors({}, { locale })}
             <ChevronDown size={14} className="shrink-0 self-center opacity-60" />
@@ -318,7 +347,7 @@ function InvestorListItem({ icon: Icon, title, desc, href, external, onNavigate 
   )
 }
 
-export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; changeLocale: (code: Locale) => void }) {
+export function LiquidGlassNav({ locale, changeLocale, tone = 'dark' }: { locale: Locale; changeLocale: (code: Locale) => void; tone?: 'dark' | 'light' }) {
   const pillRef = useRef<HTMLDivElement>(null)
   const [menu, setMenu] = useState(false)
   const liquid = useLiquidSupported()
@@ -338,7 +367,12 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
     return () => ro.disconnect()
   }, [])
 
-  const pillStyle: React.CSSProperties = navGlassStyle(liquid)
+  const pillStyle: React.CSSProperties =
+    tone === 'light' ? navGlassLightStyle(liquid) : navGlassStyle(liquid)
+  const linkPill =
+    tone === 'light'
+      ? 'whitespace-nowrap rounded-full border border-white/60 bg-white/45 px-4 py-2 text-[15px] font-semibold text-neutral-800 shadow-[0_1px_6px_rgb(15_40_80/0.05),inset_0_1px_0_rgb(255_255_255/0.5)] backdrop-blur-xl transition duration-300 hover:border-white/80 hover:bg-white/60'
+      : 'whitespace-nowrap rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[15px] font-semibold text-white transition-colors duration-300 hover:border-white/60'
 
   return (
     <header className="fixed inset-x-0 top-[max(0.75rem,env(safe-area-inset-top))] z-50 px-4 select-none sm:top-[max(1.25rem,env(safe-area-inset-top))]">
@@ -398,12 +432,12 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
               <NavAnchor
                 key={l.href}
                 href={home(l.href)}
-                className="whitespace-nowrap rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[15px] font-semibold text-white transition-colors duration-300 hover:border-white/60"
+                className={linkPill}
               >
                 {l.text({}, { locale })}
               </NavAnchor>
             ))}
-            <InvestorsMenu locale={locale} />
+            <InvestorsMenu locale={locale} tone={tone} />
             {[
               { href: '/projects', text: m.nav_projects },
               { href: '/contacts', text: m.nav_contacts },
@@ -411,7 +445,7 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
               <NavAnchor
                 key={l.href}
                 href={home(l.href)}
-                className="whitespace-nowrap rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[15px] font-semibold text-white transition-colors duration-300 hover:border-white/60"
+                className={linkPill}
               >
                 {l.text({}, { locale })}
               </NavAnchor>
@@ -419,11 +453,15 @@ export function LiquidGlassNav({ locale, changeLocale }: { locale: Locale; chang
           </nav>
 
           <div className="hidden xl:block">
-            <LanguageMenu locale={locale} onSwitch={changeLocale} />
+            <LanguageMenu locale={locale} onSwitch={changeLocale} tone={tone} />
           </div>
 
           <button
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-neutral-300 transition active:scale-95 hover:bg-white/10 hover:text-white xl:hidden"
+            className={
+              tone === 'light'
+                ? 'grid h-11 w-11 shrink-0 place-items-center rounded-full text-neutral-600 transition active:scale-95 hover:bg-black/5 hover:text-black xl:hidden'
+                : 'grid h-11 w-11 shrink-0 place-items-center rounded-full text-neutral-300 transition active:scale-95 hover:bg-white/10 hover:text-white xl:hidden'
+            }
             onClick={() => setMenu(!menu)}
             aria-expanded={menu}
             aria-controls="mobile-menu"

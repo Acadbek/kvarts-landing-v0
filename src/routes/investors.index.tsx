@@ -30,7 +30,7 @@ function InvestorsPage() {
         {locale === 'ru' ? 'Перейти к содержимому' : locale === 'en' ? 'Skip to content' : 'Kontentga o‘tish'}
       </a>
 
-      <LiquidGlassNav locale={locale} changeLocale={changeLocale} />
+      <LiquidGlassNav locale={locale} changeLocale={changeLocale} tone="light" />
 
       <main id="investors" className="mx-auto max-w-6xl scroll-mt-24 px-5 pt-28 pb-16 sm:pt-36 sm:pb-24">
         <h1 className="max-w-2xl text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.02em] text-neutral-900 sm:text-5xl">

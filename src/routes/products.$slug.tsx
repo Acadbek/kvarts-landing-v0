@@ -28,7 +28,7 @@ function CategoryPage() {
 
   return (
     <div className="bg-ios min-h-screen font-sans text-neutral-900">
-      <LiquidGlassNav locale={locale} changeLocale={changeLocale} />
+      <LiquidGlassNav locale={locale} changeLocale={changeLocale} tone="light" />
 
       <main className="mx-auto max-w-6xl scroll-mt-24 px-5 pt-28 pb-16 sm:pt-36 sm:pb-24">
         <Link

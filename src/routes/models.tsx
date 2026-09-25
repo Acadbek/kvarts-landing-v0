@@ -41,7 +41,7 @@ function ModelsPage() {
         {locale === 'ru' ? 'Перейти к содержимому' : locale === 'en' ? 'Skip to content' : 'Kontentga o‘tish'}
       </a>
 
-      <LiquidGlassNav locale={locale} changeLocale={changeLocale} />
+      <LiquidGlassNav locale={locale} changeLocale={changeLocale} tone="light" />
 
       <main id="models" className="mx-auto max-w-6xl scroll-mt-24 px-5 pt-28 pb-16 sm:pt-36 sm:pb-24">
         <p className="text-sm font-semibold text-neutral-500">

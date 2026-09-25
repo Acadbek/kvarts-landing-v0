@@ -922,6 +922,7 @@ function HeroSlideContent({ copy, locale, liquid, animated = true }: { copy: Her
 
 function VercelHero() {
   const [mounted, setMounted] = useState(false)
+  const [ready, setReady] = useState(false)
   const liquid = useLiquidSupported()
 
   // Splide faqat client'da mount qilinadi (SSR xavfsizligi) —
@@ -1032,7 +1033,27 @@ function VercelHero() {
 
       <main id="hero" className="relative overflow-hidden">
         <section className="hero-scene relative overflow-hidden bg-neutral-950">
-          {mounted ? (
+          {/* Baza qatlami — birinchi slayd rasmi doimo mount qilingan: boshqa
+              sahifadan qaytib kelganda qora flash bo'lmaydi, Splide tayyor
+              bo'lgach ustiga silliq chiqadi. */}
+          <div className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden py-28" aria-hidden="true">
+            <div className="absolute inset-0">
+              <img
+                src={HERO_SLIDES[0].image}
+                alt=""
+                loading="eager"
+                decoding="async"
+                draggable={false}
+                fetchPriority="high"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="absolute inset-0 bg-black/55" />
+          </div>
+          {mounted && (
+            <div
+              className={`absolute inset-0 transition-opacity duration-700 ${ready ? 'opacity-100' : 'opacity-0'}`}
+            >
             <Splide
               options={{
                 type: 'loop',
@@ -1052,7 +1073,10 @@ function VercelHero() {
                 slideFocus: false,
                 updateOnMove: true,
               }}
-              onMounted={handleSplideMounted}
+              onMounted={(splide) => {
+                handleSplideMounted(splide)
+                setReady(true)
+              }}
               aria-label={m.hero_eyebrow({}, { locale })}
             >
               {HERO_SLIDES.map(({ image }, i) => (
@@ -1078,22 +1102,6 @@ function VercelHero() {
                 </SplideSlide>
               ))}
             </Splide>
-          ) : (
-            /* SSR fallback — birinchi slayd statik */
-            <div className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden py-28">
-              <div className="absolute inset-0" aria-hidden="true">
-                <img
-                  src={HERO_SLIDES[0].image}
-                  alt=""
-                  loading="eager"
-                  decoding="async"
-                  draggable={false}
-                  fetchPriority="high"
-                  className="hero-slide-img h-full w-full object-cover"
-                />
-              </div>
-              <div className="absolute inset-0 bg-black/55" aria-hidden="true" />
-              <HeroSlideContent copy={heroCopy[HERO_SLIDES[0].text]} locale={locale} liquid={liquid} animated={false} />
             </div>
           )}
         </section>

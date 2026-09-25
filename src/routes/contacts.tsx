@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { Check, Mail, MapPin, Phone } from 'lucide-react'
+import {
+  Headphones as HeadphonesGlass,
+  Inbox as InboxGlass,
+  Location as LocationGlass,
+  ThumbsUp as ThumbsUpGlass,
+} from 'nucleo-glass-icons/react'
 
 import * as m from '../paraglide/messages.js'
 import type { Locale } from '../paraglide/runtime.js'
@@ -62,8 +67,8 @@ function ContactForm({ locale }: { locale: Locale }) {
   if (status === 'ok') {
     return (
       <div className="glass flex items-start gap-4 rounded-[24px] p-5 sm:p-6">
-        <span className="ios-blue grid h-11 w-11 shrink-0 place-items-center rounded-2xl text-white">
-          <Check size={20} />
+        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border border-primary">
+          <ThumbsUpGlass size={26} stopColor1="#62A7FA" stopColor2="#00408A" className="h-[26px] w-[26px]" />
         </span>
         <p className="text-[15px] font-medium leading-relaxed text-neutral-800">
           {m.ct_ok({}, { locale })}
@@ -150,19 +155,19 @@ function ContactsPage() {
 
   const cards = [
     {
-      icon: MapPin,
+      icon: LocationGlass,
       label: m.ct_address({}, { locale }),
       value: m.foot_addr({}, { locale }),
       href: undefined as string | undefined,
     },
     {
-      icon: Phone,
+      icon: HeadphonesGlass,
       label: m.ct_phone({}, { locale }),
       value: '+998 73 372-44-34',
       href: 'tel:+998733724434',
     },
     {
-      icon: Mail,
+      icon: InboxGlass,
       label: m.ct_email({}, { locale }),
       value: 'info@kvarts.uz',
       href: 'mailto:info@kvarts.uz',
@@ -178,7 +183,7 @@ function ContactsPage() {
         {locale === 'ru' ? 'Перейти к содержимому' : locale === 'en' ? 'Skip to content' : 'Kontentga o‘tish'}
       </a>
 
-      <LiquidGlassNav locale={locale} changeLocale={changeLocale} />
+      <LiquidGlassNav locale={locale} changeLocale={changeLocale} tone="light" />
 
       <main id="contacts" className="mx-auto max-w-6xl scroll-mt-24 px-5 pt-28 pb-16 sm:pt-36 sm:pb-24">
         <h1 className="max-w-2xl text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.02em] text-neutral-900 sm:text-5xl">
@@ -190,8 +195,8 @@ function ContactsPage() {
             const Icon = c.icon
             const inner = (
               <>
-                <span className="ios-blue grid h-11 w-11 shrink-0 place-items-center rounded-2xl text-white">
-                  <Icon size={20} />
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border border-primary">
+                  <Icon size={26} stopColor1="#62A7FA" stopColor2="#00408A" className="h-[26px] w-[26px]" />
                 </span>
                 <span className="min-w-0">
                   <span className="block text-[13px] font-medium text-neutral-400">{c.label}</span>

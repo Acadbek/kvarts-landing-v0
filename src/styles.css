@@ -247,7 +247,7 @@
 
 .splide__slide.is-active .hero-slide-img {
   transform: scale(1.08);
-  transition: transform 6s linear;
+  transition: transform 4.5s linear;
   will-change: transform;
 }
 
